@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071018">
+  <meta name="description" content="김기현 | Embedded Systems Developer. USB HID, MCU, C/C++, 시스템 아키텍처, 입력 이벤트 처리 및 임베디드 펌웨어 포트폴리오.">
+  <meta property="og:title" content="김기현 — Embedded Systems Developer">
+  <meta property="og:description" content="From signals to systems. 하드웨어와 펌웨어의 경계를 설계하는 임베디드 개발자.">
+  <title>김기현 — Embedded Systems / Firmware Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme:dark;
+      --bg:#071018; --bg2:#091720; --bg3:#0d1b25;
+      --panel:#0c1b25; --panel2:#0e222c;
+      --line:#1d3942; --line-soft:#16303a;
+      --teal:#61f3db; --teal2:#1bbfae; --amber:#ffb800;
+      --text:#e8f3f4; --muted:#9bb3b9; --dim:#66848d;
+      --sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      --mono:'JetBrains Mono','Fira Code',Consolas,monospace;
+      --header:74px;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header) + 24px)}
+    body{margin:0;min-width:320px;color:var(--text);background:var(--bg);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(#16303a19 1px,transparent 1px),linear-gradient(90deg,#16303a19 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(to bottom,transparent 4%,#000 55%);}
+    ::selection{color:#051518;background:var(--teal)}
+    a{color:inherit;text-decoration:none} button{font:inherit} button,a{-webkit-tap-highlight-color:transparent}
+    button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--amber);outline-offset:5px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .mono{font-family:var(--mono)} .teal{color:var(--teal)} .amber{color:var(--amber)}
+    .container{width:min(1272px,calc(100% - 96px));margin-inline:auto}
+    .section{position:relative;padding:132px 0}
+    .eyebrow{display:inline-flex;align-items:center;gap:12px;color:var(--teal);font:600 11px/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase}
+    .eyebrow::before{content:"";width:22px;height:1px;background:currentColor}
+    .section-heading{margin:19px 0 0;font-weight:700;letter-spacing:-.055em;line-height:1.19;font-size:clamp(33px,4.2vw,55px)}
+    .section-lead{color:var(--muted);font-size:17px;line-height:1.9;word-break:keep-all;max-width:620px}
+    .section-top{display:flex;justify-content:space-between;align-items:end;gap:32px;margin-bottom:45px}
+    .section-top .section-lead{max-width:390px;margin-bottom:3px}
+    .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #31545c;background:#102a3138;padding:7px 10px;color:#b5d3d5;font:500 11px/1.3 var(--mono);letter-spacing:.025em;border-radius:4px;white-space:nowrap}
+    .chip.strong{color:var(--teal);border-color:#226c68;background:#0b3a3652}
+    .chip.warm{color:var(--amber);border-color:#79602380;background:#4a321221}
+    .chip-dot{width:5px;height:5px;background:currentColor;box-shadow:0 0 9px currentColor;border-radius:50%}
+    .header{height:var(--header);position:fixed;top:0;left:0;right:0;z-index:100;background:#071018d9;border-bottom:1px solid #24414b80;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .header-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:30px}
+    .brand{display:flex;align-items:center;gap:13px;white-space:nowrap}
+    .brand-mark{display:grid;place-items:center;width:37px;height:37px;border:1px solid #5bdcc8;position:relative;color:var(--teal);font:700 15px var(--mono);letter-spacing:-.14em}
+    .brand-mark:before,.brand-mark:after{content:"";position:absolute;width:4px;height:4px;background:var(--amber)} .brand-mark:before{top:-2px;left:-2px}.brand-mark:after{right:-2px;bottom:-2px}
+    .brand-name{display:block;font:700 12px var(--mono);letter-spacing:.09em;color:#e4f2f1}
+    .brand-sub{display:block;margin-top:4px;font:500 9px var(--mono);letter-spacing:.12em;color:var(--dim)}
+    .desktop-nav{display:flex;gap:31px;align-items:center}
+    .desktop-nav a{font:500 11px var(--mono);color:#b6cad0;transition:color .25s}
+    .desktop-nav a:hover,.desktop-nav a.active{color:var(--teal)}
+    .nav-num{color:#58747b;margin-right:5px}
+    .header-actions{display:flex;align-items:center;gap:19px}
+    .tiny-status{display:flex;align-items:center;gap:9px;color:#a8d9d2;font:500 10px var(--mono);white-space:nowrap}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:#51dbad;box-shadow:0 0 0 4px #3addb115,0 0 12px #51dbad}
+    .menu-toggle{display:none;width:38px;height:38px;background:#0c242b;border:1px solid #2c4b55;color:var(--teal);font-size:21px;cursor:pointer}
+    .mobile-nav{display:none;position:absolute;top:var(--header);left:0;right:0;padding:14px 24px 20px;background:#091820;border-bottom:1px solid var(--line)}
+    .mobile-nav a{display:block;padding:13px 0;color:#cce4e4;font:500 13px var(--mono)}
+    .progress-track{position:absolute;bottom:0;left:0;width:100%;height:2px;background:transparent;overflow:hidden}
+    .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));box-shadow:0 0 12px var(--teal)}
+    .hero{position:relative;isolation:isolate;min-height:820px;padding:calc(var(--header) + 115px) 0 75px;overflow:hidden;border-bottom:1px solid #18343e}
+    .hero::before{content:"";position:absolute;z-index:-1;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,#13baad16 0%,#13baad0a 30%,transparent 69%);left:50%;top:4%;transform:translateX(-1%);pointer-events:none}
+    .hero-circuit{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.56;pointer-events:none;mask-image:linear-gradient(to right,transparent,#000 34%,#000)}
+    .hero-circuit .track{fill:none;stroke:#1b675f;stroke-width:1.25;stroke-linejoin:round}
+    .hero-circuit .track.hot{stroke:#40d7c2;stroke-opacity:.62;stroke-dasharray:11 32}
+    .hero-circuit .pad{fill:#0d3634;stroke:#2a9686;stroke-width:1.1}
+    .hero-circuit .lit{fill:#67f0d5;filter:drop-shadow(0 0 5px #63e9d4)}
+    .hero-inner{display:grid;grid-template-columns:1.07fr .93fr;gap:7.5%;align-items:center}
+    .hero-overline{display:flex;align-items:center;gap:13px;font:600 12px var(--mono);color:var(--teal);letter-spacing:.09em}
+    .hero-overline .square{height:8px;width:8px;background:var(--teal);box-shadow:0 0 14px #61f3db8e}
+    .hero-h1{margin:27px 0 23px;font-size:clamp(48px,5.4vw,88px);line-height:1.09;letter-spacing:-.074em;font-weight:800;word-break:keep-all}
+    .hero-h1 .last{display:block;color:var(--teal);text-shadow:0 0 45px #2adcc323}
+    .hero-description{max-width:540px;color:#b3c9cc;font-size:18px;line-height:1.92;word-break:keep-all;margin-bottom:31px}
+    .hero-description strong{font-weight:600;color:#eef8f7}
+    .hero-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .btn{min-height:49px;display:inline-flex;justify-content:center;align-items:center;gap:11px;padding:0 19px;border-radius:4px;font:700 11px var(--mono);letter-spacing:.035em;transition:transform .25s,border-color .25s,background .25s;cursor:pointer}
+    .btn:hover{transform:translateY(-3px)}
+    .btn-primary{background:var(--teal);color:#061a1e;border:1px solid var(--teal);box-shadow:0 7px 32px #36d9c129}
+    .btn-primary:hover{background:#9afae8}.btn-ghost{background:#09222a8c;color:var(--text);border:1px solid #37555e}.btn-ghost:hover{border-color:var(--teal)}
+    .btn .arrow{font-size:15px;line-height:1}
+    .hero-aside{position:relative}
+    .terminal{overflow:hidden;position:relative;background:#0b1921eb;border:1px solid #35545b;border-radius:9px;box-shadow:0 34px 100px #0008,0 0 0 1px #67f4d20a,0 0 80px #1abfac0b;transform:perspective(1200px) rotateY(-4deg) rotateX(2deg)}
+    .terminal:before{content:"";position:absolute;inset:38px 0 0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,#0002 4px);opacity:.33;z-index:2}
+    .terminal-top{height:43px;padding:0 17px;display:flex;align-items:center;justify-content:space-between;background:#142830;border-bottom:1px solid #31505b}
+    .terminal-dots{display:flex;gap:7px}.terminal-dots b{height:8px;width:8px;border-radius:50%;background:#677c84}.terminal-dots b:nth-child(1){background:#f17c75}.terminal-dots b:nth-child(2){background:#e8c45e}.terminal-dots b:nth-child(3){background:#61d3af}
+    .terminal-filename{font:600 10px var(--mono);color:#95aeb3;letter-spacing:.04em}
+    .terminal-body{padding:29px 28px 31px;font:500 12px/2.0 var(--mono);min-height:348px;color:#b9cdd1;position:relative}
+    .term-row{white-space:nowrap}.term-row .muted{color:#6d9199}.term-row .prompt{color:var(--teal)}.term-row .val{color:#e0f1f2}.term-row .warn{color:var(--amber)}
+    .term-divider{height:1px;background:#27414a;margin:16px 0}
+    .type-line{min-height:28px;color:var(--teal);font-weight:700;white-space:normal}
+    .cursor{display:inline-block;width:8px;height:15px;background:var(--teal);vertical-align:-3px;animation:blink 1.1s steps(1) infinite;margin-left:3px}
+    @keyframes blink{50%{opacity:0}}
+    .terminal-bottom{display:flex;justify-content:space-between;padding:12px 19px;border-top:1px solid #2a4850;background:#08151c;color:#6b9198;font:500 9px var(--mono);letter-spacing:.025em}
+    .terminal-bottom span:first-child{color:var(--teal)}
+    .floating-note{position:absolute;right:-16px;bottom:-39px;display:flex;align-items:center;gap:9px;padding:13px 14px;background:#112a31;border:1px solid #34796d;box-shadow:0 16px 40px #0007;font:600 10px var(--mono);color:#c3e5e0;transform:rotate(1deg)}
+    .floating-note i{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber)}
+    .hero-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #22434b80;margin-top:99px;padding-top:25px}
+    .hero-facts{display:flex;align-items:center;flex-wrap:wrap;gap:36px}
+    .fact .fact-value{display:block;color:#dbeff0;font:600 12px var(--mono);letter-spacing:.04em}
+    .fact .fact-label{display:block;margin-top:8px;color:var(--dim);font:500 10px var(--mono);letter-spacing:.08em}
+    .scroll-hint{display:flex;align-items:center;gap:13px;color:var(--dim);font:600 10px var(--mono);letter-spacing:.1em}
+    .scroll-hint:after{content:"";width:32px;height:1px;background:var(--teal)}
+    .about{background:linear-gradient(180deg,#08131b 0%,#071018 100%)}
+    .about-grid{display:grid;grid-template-columns:1fr 1.07fr;gap:11%;align-items:center}
+    .about-intro{color:#b2c9cd;line-height:1.97;font-size:17px;word-break:keep-all;margin:26px 0 0}
+    .about-intro b{font-weight:700;color:#e1f4f2}
+    .about-mini{margin-top:28px;color:#83a9ac;font:500 12px/1.9 var(--mono)}
+    .capabilities{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .capability{position:relative;min-height:166px;border:1px solid #26414a;background:linear-gradient(145deg,#10232c,#0a1720);padding:23px;transition:transform .26s,border-color .26s}
+    .capability:hover{transform:translateY(-4px);border-color:#48bfb0}
+    .capability:before{content:"";position:absolute;right:0;top:0;width:18px;height:18px;border-top:1px solid #61f3db6a;border-right:1px solid #61f3db6a}
+    .capability-no{font:600 11px var(--mono);color:var(--teal);margin-bottom:26px}.capability-name{font-size:19px;font-weight:700;color:#edf6f5;margin-bottom:8px}.capability-desc{color:#8aaab0;font-size:12px;line-height:1.65}
+    .architecture{background:#091820;border-top:1px solid #18333e;border-bottom:1px solid #18333e;overflow:hidden}
+    .architecture::before{content:"";position:absolute;top:-160px;left:-160px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,#00e0c80d,transparent 65%);pointer-events:none}
+    .arch-head{margin-bottom:36px}.arch-head .section-lead{max-width:700px}
+    .arch-toolbar{display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+    .segmented{display:flex;padding:4px;background:#071219;border:1px solid #29434e;border-radius:6px;gap:3px}
+    .segmented button{cursor:pointer;border:0;background:transparent;color:#839fa5;font:600 11px var(--mono);padding:11px 15px;border-radius:3px;transition:background .2s,color .2s}
+    .segmented button[aria-pressed="true"]{background:#174239;color:#6ffce2;box-shadow:inset 0 0 0 1px #2b8172}
+    .bus-controls{display:flex;gap:7px;flex-wrap:wrap}
+    .bus-button{cursor:pointer;border:1px solid #2a4a51;border-radius:3px;padding:9px 12px;background:#0b212b;color:#98b5ba;font:600 10px var(--mono);transition:background .2s,border-color .2s,color .2s}
+    .bus-button[aria-pressed="true"]{background:#24483d;color:var(--teal);border-color:#3d9b85}
+    .arch-panel{position:relative;border:1px solid #2c5058;background:radial-gradient(ellipse at 45% 35%,#0e3034 0%,#0a1c26 53%,#07131a 100%);border-radius:7px;overflow:hidden}
+    .arch-panel:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#14384055 1px,transparent 1px),linear-gradient(90deg,#14384055 1px,transparent 1px);background-size:30px 30px;opacity:.4;pointer-events:none}
+    .arch-panel-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:15px 22px;border-bottom:1px solid #294852;background:#0a1c24a8}
+    .arch-panel-top span{font:600 10px var(--mono);color:#8eabb2;letter-spacing:.07em}.arch-panel-top .green{color:var(--teal)}
+    .arch-view{position:relative;z-index:1;padding:12px 13px 1px}
+    .arch-view[hidden]{display:none}
+    .arch-svg{width:100%;height:auto;display:block;min-width:750px;overflow:visible}
+    .arch-scroll{overflow-x:auto;overflow-y:hidden;scrollbar-color:#36575b #0b2027;scrollbar-width:thin}
+    .arch-svg text{font-family:var(--mono)}
+    .diagram-node{fill:#0d222b;stroke:#39626b;stroke-width:1.4}
+    .diagram-node.primary{stroke:#55dfc8;fill:#103037;stroke-width:1.8}
+    .diagram-node.aux{stroke:#55717a;fill:#10212b}
+    .diagram-label{fill:#e3f5f2;font-size:17px;font-weight:700}.diagram-caption{fill:#89aeb5;font-size:11.5px}.diagram-small{fill:#b9d3d4;font-size:11px}.diagram-id{fill:#59ead2;font-size:11px;font-weight:700;letter-spacing:1.4px}
+    .diagram-slot{fill:#29454c}.diagram-pin{fill:#65b7ad}.diagram-pin.amber{fill:var(--amber)}
+    .wire-back{fill:none;stroke:#1e4750;stroke-width:9;stroke-linecap:round;opacity:.48}
+    .wire{fill:none;stroke:#46a8a0;stroke-width:2.3;stroke-linecap:round;stroke-dasharray:7 8;opacity:.76}
+    .wire.serial{stroke:var(--amber)}.wire.wifi{stroke:#87aaa9;stroke-dasharray:3 10}.wire.spi{stroke:#ebc36b}
+    .wire.trace-active{stroke-width:3;opacity:1;filter:drop-shadow(0 0 5px currentColor)}
+    .wire.trace-dim{opacity:.1}
+    .packet{fill:var(--teal);filter:drop-shadow(0 0 6px var(--teal)) drop-shadow(0 0 11px var(--teal));pointer-events:none}
+    .packet.serial{fill:var(--amber);filter:drop-shadow(0 0 5px var(--amber)) drop-shadow(0 0 11px var(--amber))}
+    .packet.wifi{fill:#c7f2e9}.packet.spi{fill:#ffce75}
+    .bus-text{fill:#8db3b8;font-size:10px;letter-spacing:1px;font-weight:700}.bus-text.amber{fill:var(--amber)}
+    .flow-caption{margin-top:0;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;border-top:1px solid #25444c;padding:13px 21px;color:#739ba2;font:500 10px/1.5 var(--mono)}
+    .arch-footnotes{display:grid;grid-template-columns:1fr 1fr;gap:23px;margin-top:24px}
+    .arch-note{display:flex;gap:15px;border-left:1px solid #43766d;padding:9px 0 9px 18px;min-width:0}.arch-note:nth-child(2){border-left-color:#946f30}
+    .arch-note-no{color:var(--teal);font:600 11px var(--mono);padding-top:3px}.arch-note:nth-child(2) .arch-note-no{color:var(--amber)}
+    .arch-note strong{font-size:14px;font-weight:700}.arch-note p{font-size:12px;color:#90afb4;line-height:1.75;margin:7px 0 0}
+    .projects{background:var(--bg)}
+    .projects-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+    .project-card{position:relative;overflow:hidden;min-height:358px;display:flex;flex-direction:column;justify-content:space-between;padding:31px;border:1px solid #2b4a52;background:linear-gradient(135deg,#101f29,#09161f 72%);transition:border-color .3s,transform .3s,box-shadow .3s}
+    .project-card:hover{transform:translateY(-6px);border-color:#68e6d0;box-shadow:0 18px 50px #0006,0 0 35px #1ed5b917,inset 0 0 35px #11b5a307}
+    .project-card::before,.project-card::after{content:"";position:absolute;width:10px;height:10px;border:1px solid #3d716a;border-radius:50%;box-shadow:0 0 0 3px #0a2626;transition:background .3s,box-shadow .3s;z-index:1}
+    .project-card::before{right:25px;top:25px}.project-card::after{right:25px;bottom:25px}
+    .project-card:hover::before,.project-card:hover::after{background:var(--teal);box-shadow:0 0 0 4px #155c54,0 0 18px var(--teal),0 0 38px #61f3db65}
+    .card-trace{position:absolute;right:23px;top:29px;width:165px;height:80px;pointer-events:none;opacity:.37;transition:opacity .3s}
+    .card-trace path{stroke:#47b7a6;fill:none;stroke-width:1.2}.project-card:hover .card-trace{opacity:.96}
+    .card-index{color:var(--teal);font:600 11px var(--mono);letter-spacing:.1em;margin-bottom:52px}
+    .project-card:nth-child(2) .card-index,.project-card:nth-child(4) .card-index{color:var(--amber)}
+    .project-title{margin:0 0 13px;font-weight:750;line-height:1.26;letter-spacing:-.035em;font-size:clamp(23px,2.6vw,31px)}
+    .project-eng{color:#81a5ac;font:600 10px var(--mono);letter-spacing:.04em;margin-bottom:18px}
+    .project-desc{max-width:460px;margin:0 0 21px;line-height:1.8;font-size:14px;color:#adc4c8;word-break:keep-all}
+    .stack{display:flex;flex-wrap:wrap;gap:7px}
+    .card-bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:27px;padding-top:18px;border-top:1px solid #27464c}
+    .card-bottom .card-detail{color:#749aa2;font:500 10px var(--mono)}
+    .card-link{font:600 11px var(--mono);color:#9df9e9;display:inline-flex;gap:9px;align-items:center;white-space:nowrap}
+    .card-link:hover{text-decoration:underline;text-underline-offset:5px}
+    .timeline{background:linear-gradient(180deg,#091820,#071018);border-top:1px solid #1a3942}
+    .timeline-shell{display:grid;grid-template-columns:.75fr 1.25fr;gap:12%}
+    .timeline-head .section-heading{max-width:330px}
+    .timeline-head .section-lead{margin-top:25px}
+    .timeline-log{position:relative;padding-left:31px;border-left:1px solid #24545a}
+    .log-item{position:relative;padding:0 0 41px}
+    .log-item:last-child{padding-bottom:0}
+    .log-item:before{content:"";position:absolute;left:-37px;top:4px;width:11px;height:11px;border:2px solid var(--teal);background:#0a1a23;box-shadow:0 0 0 5px #123038}
+    .log-item:last-child:before{border-color:var(--amber);box-shadow:0 0 0 5px #40341552}
+    .log-meta{font:700 10px var(--mono);letter-spacing:.1em;color:var(--teal);margin-bottom:13px}
+    .log-item:last-child .log-meta{color:var(--amber)}
+    .log-card{background:#0b1b25;border:1px solid #2c4b52;border-radius:5px;overflow:hidden}
+    .log-title{padding:16px 21px;font-size:16px;font-weight:700;color:#e8f4f3;background:#112631;border-bottom:1px solid #25444b}
+    .log-code{padding:18px 21px 20px;font:500 11px/2.0 var(--mono);color:#b8cbd1;white-space:normal;word-break:keep-all}
+    .log-code .key{color:#67939a}.log-code .cmd{color:var(--teal)}.log-code .out{color:#e2eeee}.log-code .highlight{color:var(--amber)}
+    .log-code>div{padding-left:14px;text-indent:-14px}
+    .log-split{display:flex;gap:9px;align-items:center}
+    .log-split:before{content:'›';font-size:15px;color:var(--teal)}
+    .details{border-top:1px solid #1e3a43;background:#08141c}
+    .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .detail-panel{min-width:0;background:#0b1c25;border:1px solid #2b4650;padding:27px;border-radius:5px}
+    .detail-panel h3{font-size:19px;margin:0 0 11px;letter-spacing:-.03em}.detail-panel p{color:#96b0b6;font-size:13px;line-height:1.85;margin:0 0 21px}
+    .feature-rows{display:grid;gap:12px}.feature-row{display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid #203b45;padding-bottom:12px}.feature-row:last-child{border-bottom:0;padding-bottom:0}
+    .feature-symbol{color:var(--teal);font:700 11px var(--mono);min-width:21px;padding-top:1px}.feature-row div{color:#adc6c8;font-size:13px;line-height:1.5}
+    .feature-row b{color:#e6f4f3;display:block;margin-bottom:4px;font-size:13px}
+    .mini-diagram{width:100%;display:block;aspect-ratio:2.15/1;object-fit:contain;background:#f5f7f7;border:1px solid #60818a3d;cursor:zoom-in}
+    .diagram-hint{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;color:#779da5;font:500 10px var(--mono)}
+    .wiring-btn{background:transparent;border:0;color:var(--teal);font:600 10px var(--mono);cursor:pointer;padding:5px 0}
+    .wiring-btn:hover{text-decoration:underline;text-underline-offset:5px}
+    .contact{background:radial-gradient(ellipse at 85% 60%,#0e554a27,transparent 54%),#091a21;border-top:1px solid #25414a;padding:110px 0 94px}
+    .contact-grid{display:flex;justify-content:space-between;gap:55px;align-items:end}
+    .contact .section-heading{font-size:clamp(39px,5.1vw,69px)}
+    .contact p{font-size:16px;line-height:1.9;color:#a8c4c7;max-width:540px;word-break:keep-all}
+    .contact-links{display:flex;gap:11px;align-items:center;flex-wrap:wrap}
+    .footer{border-top:1px solid #1f3942;padding:25px 0 30px;background:#060f16}
+    .footer-inner{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:#6c8b93;font:500 10px/1.8 var(--mono)}
+    .footer-inner span b{color:#b5d5d7;font-weight:600}
+    dialog{border:1px solid #51776e;border-radius:7px;padding:0;background:#0b1a22;color:#e9f8f5;max-width:min(960px,95vw);max-height:90vh;box-shadow:0 30px 100px #000b}
+    dialog::backdrop{background:#020a0ddc;backdrop-filter:blur(5px)}
+    .dialog-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #294a50;gap:13px;font:600 12px var(--mono)}
+    .dialog-bar button{color:var(--teal);background:transparent;border:1px solid #3d6569;cursor:pointer;padding:7px 10px;border-radius:3px}
+    dialog img{display:block;width:100%;max-height:72vh;object-fit:contain;background:white}
+    .dialog-caption{padding:12px 20px;color:#87a9ae;font-size:12px;line-height:1.7}
+    .noscript{margin:100px auto 0;width:min(100% - 36px,620px);padding:14px;border:1px solid var(--amber);background:#312814;color:#f3e2b7;font-size:13px;text-align:center}
+    @media(max-width:1180px){
+      .container{width:min(100% - 64px,1200px)}
+      .hero-inner{gap:4%}.hero-h1{font-size:clamp(48px,5.6vw,75px)}
+      .terminal-body{font-size:11px;padding:23px 20px}
+      .desktop-nav{gap:19px}
+    }
+    @media(max-width:900px){
+      :root{--header:66px}
+      .desktop-nav,.tiny-status{display:none}.menu-toggle{display:block}
+      .mobile-nav.open{display:block}
+      .hero{padding-top:150px;min-height:auto}
+      .hero-inner{grid-template-columns:1fr;gap:65px}.hero-h1{font-size:clamp(55px,8.7vw,82px)}
+      .hero-aside{width:min(590px,100%)}.terminal{transform:none}.floating-note{right:0}
+      .hero-bottom{margin-top:115px}
+      .about-grid,.timeline-shell{grid-template-columns:1fr;gap:52px}
+      .about-grid{align-items:start}.section-top{align-items:start;flex-direction:column;gap:10px}
+      .arch-footnotes{gap:18px}.contact-grid{align-items:start;flex-direction:column;gap:25px}
+      .section{padding:95px 0}
+    }
+    @media(max-width:650px){
+      .container{width:calc(100% - 38px)}
+      .hero{padding-top:125px;padding-bottom:38px}
+      .hero-overline{font-size:10px}.hero-h1{margin-top:24px;font-size:clamp(47px,12vw,68px);letter-spacing:-.075em}
+      .hero-description{font-size:15px;line-height:1.85}
+      .hero-cta .btn{padding:0 13px;font-size:10px}
+      .hero-facts{gap:20px 25px}.fact .fact-value{font-size:10px}.fact .fact-label{font-size:8px}.scroll-hint{display:none}
+      .hero-bottom{margin-top:88px}
+      .terminal-body{padding:19px 15px 23px;font-size:9.4px;min-height:312px}
+      .terminal-bottom{font-size:8px;padding:12px 10px}.terminal-top{height:37px}
+      .floating-note{bottom:-26px;padding:10px;font-size:8px}
+      .section{padding:79px 0}.section-heading{font-size:clamp(32px,9vw,46px)}.section-lead{font-size:15px}
+      .about-intro{font-size:15px}.capabilities{gap:9px}.capability{min-height:152px;padding:17px}.capability-name{font-size:16px}.capability-desc{font-size:11px}
+      .arch-toolbar{align-items:stretch}.segmented{width:100%;flex-wrap:wrap}.segmented button{flex:1;padding:10px 5px;font-size:10px}
+      .arch-panel-top{padding:12px;font-size:8px}.arch-view{padding:8px 5px 0}.arch-svg{min-width:720px}
+      .flow-caption{padding:11px 12px;font-size:9px}.arch-footnotes{grid-template-columns:1fr;gap:18px}
+      .projects-grid,.details-grid{grid-template-columns:1fr}.project-card{padding:24px;min-height:343px}.card-index{margin-bottom:37px}
+      .timeline-log{padding-left:24px}.log-item:before{left:-30px}.log-code{font-size:10px;padding:15px}.log-title{font-size:14px;padding:14px 16px}
+      .contact{padding:85px 0 69px}.contact p{font-size:14px}.footer-inner{font-size:9px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.terminal{transform:none}}
+
+/* Embedded autoplay signal transformation — isolated from portfolio architecture. */
+.hero-inner{grid-template-columns:minmax(0,.74fr) minmax(0,1.26fr);gap:4.4%}
+.hero{min-height:760px;padding-top:calc(var(--header) + 95px)}
+.hero-h1{font-size:clamp(48px,5.2vw,79px)}
+.hero-aside{min-width:0}
+.signal-frame{background:#0b1921f0;border:1px solid #35545b;border-radius:10px;padding:13px;box-shadow:0 30px 90px #0009,0 0 60px #1abfac0e}
+.signal-framebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 9px 15px;color:#94b2b8;font:600 10px var(--mono);letter-spacing:.07em}
+.signal-framebar .signal-live{color:var(--teal)}
+.signal-demo{--cycle:5.5s;--input:#38bdf8;--output:#fb923c;--pcb:#34d399}
+.signal-demo svg{display:block;width:100%;height:auto;margin:0 auto}
+.signal-demo .packet-a{animation:signal-a var(--cycle) linear infinite}
+.signal-demo .packet-b{animation:signal-b var(--cycle) linear infinite}
+.signal-demo .key{animation:signal-key var(--cycle) infinite}
+.signal-demo .process{animation:signal-process var(--cycle) infinite}
+.signal-demo .result{animation:signal-result var(--cycle) infinite}
+.signal-demo .idle{animation:signal-idle var(--cycle) infinite}
+@keyframes signal-a{0%,10%{opacity:0;transform:translateX(0)}13%{opacity:1;transform:translateX(0)}32%{opacity:1;transform:translateX(270px)}35%,100%{opacity:0;transform:translateX(270px)}}
+@keyframes signal-b{0%,45%{opacity:0;transform:translateX(0)}48%{opacity:1;transform:translateX(0)}64%{opacity:1;transform:translateX(290px)}66%,100%{opacity:0;transform:translateX(290px)}}
+@keyframes signal-key{0%,12%{fill:var(--input)}18%,100%{fill:#46566b}}
+@keyframes signal-process{0%,31%,49%,100%{opacity:0}35%,45%{opacity:1}}
+@keyframes signal-result{0%,64%,98%,100%{opacity:0}67%,94%{opacity:1}}
+@keyframes signal-idle{0%,64%,98%,100%{opacity:1}67%,94%{opacity:0}}
+.signal-demo .static{display:none}
+.signal-demo[data-waiting] *{animation-play-state:paused!important}
+.signal-legend{display:flex;gap:17px;flex-wrap:wrap;padding:14px 7px 5px;color:#8fafb4;font:500 11px/1.5 var(--mono)}
+.signal-legend .in{color:#38bdf8}.signal-legend .out{color:#fb923c}
+.hardware-embed{display:block;width:100%;height:1120px;border:0;border-radius:8px;background:#0a1015}
+.hardware-panel{border:1px solid #2b4650;background:#0b1c25;border-radius:7px;padding:7px;min-width:0}
+.details-grid{grid-template-columns:1fr;gap:20px}
+.details-grid .feature-rows{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 25px}
+.details-grid .feature-row:nth-last-child(2){border-bottom:0;padding-bottom:0}
+.hardware-heading{padding:20px 24px 10px}
+.hardware-heading h3{font-size:21px;margin:0 0 7px}.hardware-heading p{color:#96b0b6;line-height:1.8;margin:0;font-size:13px}
+@media(min-width:1180px){.hero .container{width:min(1420px,calc(100% - 96px))}}
+@media(max-width:1100px){.hero-inner{grid-template-columns:1fr;gap:37px}.hero-aside{width:100%}.hero{padding-top:145px}.hero-bottom{margin-top:65px}}
+@media(max-width:850px){.hardware-embed{height:1510px}.details-grid .feature-rows{grid-template-columns:1fr}.details-grid .feature-row:nth-last-child(2){border-bottom:1px solid #203b45;padding-bottom:12px}}
+@media(max-width:650px){.signal-frame{padding:7px}.signal-framebar{font-size:9px}.signal-legend{font-size:9px;gap:8px}.hero{padding-top:113px}.hero-bottom{margin-top:50px}.hardware-heading{padding:17px 12px 10px}.hardware-embed{height:1550px}}
+@media(prefers-reduced-motion:reduce){.signal-demo.force-motion .packet-a{animation:signal-a var(--cycle) linear infinite!important}.signal-demo.force-motion .packet-b{animation:signal-b var(--cycle) linear infinite!important}.signal-demo.force-motion .key{animation:signal-key var(--cycle) infinite!important}.signal-demo.force-motion .process{animation:signal-process var(--cycle) infinite!important}.signal-demo.force-motion .result{animation:signal-result var(--cycle) infinite!important}.signal-demo.force-motion .idle{animation:signal-idle var(--cycle) infinite!important}}
+
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#main">본문으로 바로가기</a>
+  <header class="header" id="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand" aria-label="김기현 포트폴리오 처음으로">
+        <span class="brand-mark">KH</span>
+        <span><span class="brand-name">KIM KI HYEN</span><span class="brand-sub">EMBEDDED // FIRMWARE</span></span>
+      </a>
+      <nav class="desktop-nav" aria-label="주 메뉴">
+        <a href="#about"><span class="nav-num">01.</span>ABOUT</a>
+        <a href="#architecture"><span class="nav-num">02.</span>ARCHITECTURE</a>
+        <a href="#projects"><span class="nav-num">03.</span>PROJECTS</a>
+        <a href="#timeline"><span class="nav-num">04.</span>DEV LOG</a>
+      </nav>
+      <div class="header-actions"><div class="tiny-status"><span class="status-dot"></span>AVAILABLE FOR CONNECTION</div><button id="menu-toggle" class="menu-toggle" type="button" aria-label="메뉴 열기" aria-controls="mobile-nav" aria-expanded="false">☰</button></div>
+    </div>
+    <nav class="mobile-nav" id="mobile-nav" aria-label="모바일 메뉴">
+      <a href="#about">01 / ABOUT</a><a href="#architecture">02 / ARCHITECTURE</a><a href="#projects">03 / PROJECTS</a><a href="#timeline">04 / DEV LOG</a><a href="#contact">05 / CONTACT</a>
+    </nav>
+    <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+  </header>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <svg class="hero-circuit" viewBox="0 0 1440 850" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><pattern id="pcbgrid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="#145249" stroke-opacity=".2" stroke-width=".8"/></pattern></defs>
+        <rect width="1440" height="850" fill="url(#pcbgrid)"/>
+        <path class="track" d="M800 -10V100H900L965 165H1130V280H1245L1330 365V650H1440"/>
+        <path class="track" d="M980 -10V85L1040 145V210H1180L1280 310H1440"/>
+        <path class="track" d="M1440 125H1370V170H1290L1210 250V355H1090L1020 425V620H865"/>
+        <path class="track" d="M1440 400H1395L1280 515H1200V630H1100L985 745H830"/>
+        <path class="track" d="M1230 850V720H1350V675H1440"/><path class="track" d="M950 850V790H1060V715H1150"/>
+        <path class="track hot" id="hero-hottrace" d="M945 0V102H1070L1160 195H1320V315H1440"/>
+        <path class="track hot" d="M1440 515H1360L1280 600H1145V715H985L910 790H850"/>
+        <circle class="pad" cx="900" cy="100" r="5"/><circle class="pad" cx="1130" cy="280" r="5"/><circle class="pad lit" cx="1245" cy="280" r="3"/>
+        <circle class="pad" cx="1180" cy="210" r="5"/><circle class="pad" cx="1210" cy="355" r="5"/><circle class="pad lit" cx="1020" cy="425" r="3"/>
+        <circle class="pad" cx="1200" cy="630" r="5"/><circle class="pad" cx="1280" cy="515" r="5"/><circle class="pad" cx="985" cy="745" r="5"/>
+        <circle class="pad" cx="1100" cy="715" r="5"/><circle class="pad lit" cx="950" cy="790" r="3"/>
+      </svg>
+      <div class="container">
+        <div class="hero-inner">
+          <div class="hero-main">
+            <div class="hero-overline"><span class="square"></span><span>SIGNAL FOUND / SYSTEM ONLINE</span></div>
+            <h1 id="hero-title" class="hero-h1">상상을<br><span class="last">신호로.</span></h1>
+            <p class="hero-description"><strong>임베디드 시스템 개발자 김기현</strong>입니다.<br>키보드의 A 입력이 B로 바뀌는 순간처럼, 하드웨어의 신호와 펌웨어의 동작을 연결해 상상을 실제 기능으로 구현합니다.</p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#architecture">EXPLORE SYSTEM <span class="arrow" aria-hidden="true">↗</span></a>
+              <a class="btn btn-ghost" href="https://github.com/AliveSophist/USB_Hijacker" target="_blank" rel="noopener noreferrer">VIEW SOURCE <span class="arrow" aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <div class="hero-aside" aria-label="USB 키보드 입력 A가 USB_HIJACKER를 거쳐 B로 변환되는 자동재생 애니메이션">
+            <div class="signal-frame">
+              <div class="signal-framebar"><span><span class="signal-live">●</span> USB_HIJACKER / SIGNAL TRANSFORMATION</span><span>LIVE DEMONSTRATION</span></div>
+              <div class="signal-demo force-motion" data-waiting="true"><svg aria-labelledby="title desc" role="img" viewbox="0 0 1000 320" xmlns="http://www.w3.org/2000/svg"><title id="title">USB_HIJACKER signal transformation</title><desc id="desc">A keyboard sends A to an intermediate module, which maps it to B and sends B to the host computer.</desc><defs><lineargradient id="case" x2="0" y2="1"><stop stop-color="#344256"></stop><stop offset="1" stop-color="#1b2534"></stop></lineargradient><lineargradient id="board" x2="1" y2="1"><stop stop-color="#164b3c"></stop><stop offset="1" stop-color="#102e29"></stop></lineargradient><pattern height="19" id="keys" patternunits="userSpaceOnUse" width="19"><rect fill="#46566b" height="15" rx="3" stroke="#65748a" stroke-width=".6" width="15" x="1" y="1"></rect></pattern><filter height="220%" id="glow" width="220%" x="-60%" y="-60%"><fegaussianblur stddeviation="5"></fegaussianblur></filter></defs>
+<rect fill="#101722" height="310" rx="22" stroke="#344256" width="990" x="5" y="5"></rect>
+<g fill="none" stroke-linecap="round"><path d="M220 150 H420 M580 150 H780" stroke="#344256" stroke-width="9"></path><path d="M220 150 H420 M580 150 H780" stroke="#718096" stroke-dasharray="5 9" stroke-width="2"></path></g>
+<g font-size="12" font-weight="600" letter-spacing="1.5" text-anchor="middle"><text fill="var(--input)" x="320" y="109">INPUT · A</text><text fill="var(--output)" x="680" y="109">OUTPUT · B</text></g>
+<!-- keyboard -->
+<g><rect fill="url(#case)" height="112" rx="12" stroke="#78879b" stroke-width="1.5" width="195" x="30" y="94"></rect><rect fill="url(#keys)" height="76" rx="3" width="171" x="42" y="106"></rect><rect fill="#46566b" height="12" rx="3" width="94" x="80" y="183"></rect><rect class="key" fill="#46566b" height="15" rx="3" width="15" x="62" y="145"></rect><text fill="#101722" font-size="10" font-weight="bold" text-anchor="middle" x="69.5" y="156">A</text><rect fill="#8190a4" height="18" rx="2" width="12" x="225" y="141"></rect></g>
+<!-- module -->
+<g><rect fill="url(#board)" height="156" rx="12" stroke="var(--pcb)" stroke-width="1.5" width="180" x="410" y="72"></rect><rect class="process" fill="none" filter="url(#glow)" height="156" rx="12" stroke="var(--pcb)" stroke-width="5" width="180" x="410" y="72"></rect><g fill="#c1a96a"><circle cx="423" cy="83" r="3"></circle><circle cx="423" cy="217" r="3"></circle><circle cx="437" cy="83" r="3"></circle><circle cx="437" cy="217" r="3"></circle><circle cx="451" cy="83" r="3"></circle><circle cx="451" cy="217" r="3"></circle><circle cx="465" cy="83" r="3"></circle><circle cx="465" cy="217" r="3"></circle><circle cx="479" cy="83" r="3"></circle><circle cx="479" cy="217" r="3"></circle><circle cx="493" cy="83" r="3"></circle><circle cx="493" cy="217" r="3"></circle><circle cx="507" cy="83" r="3"></circle><circle cx="507" cy="217" r="3"></circle><circle cx="521" cy="83" r="3"></circle><circle cx="521" cy="217" r="3"></circle><circle cx="535" cy="83" r="3"></circle><circle cx="535" cy="217" r="3"></circle><circle cx="549" cy="83" r="3"></circle><circle cx="549" cy="217" r="3"></circle><circle cx="563" cy="83" r="3"></circle><circle cx="563" cy="217" r="3"></circle><circle cx="577" cy="83" r="3"></circle><circle cx="577" cy="217" r="3"></circle></g><g fill="none" stroke="#438a70" stroke-width="1.5"><path d="M420 110 H451 V125 H465 M420 190 H450 V175 H465 M535 125 H550 V105 H580 M535 175 H550 V195 H580 M432 150 H465 M535 150 H580"></path></g><rect fill="#101b22" height="70" rx="5" stroke="#75b8a2" width="70" x="465" y="115"></rect><g stroke="#a4b6b4" stroke-width="2"><path d="M472 109 v6 M472 185 v6 M459 122 h6 M535 122 h6"></path><path d="M480 109 v6 M480 185 v6 M459 130 h6 M535 130 h6"></path><path d="M488 109 v6 M488 185 v6 M459 138 h6 M535 138 h6"></path><path d="M496 109 v6 M496 185 v6 M459 146 h6 M535 146 h6"></path><path d="M504 109 v6 M504 185 v6 M459 154 h6 M535 154 h6"></path><path d="M512 109 v6 M512 185 v6 M459 162 h6 M535 162 h6"></path><path d="M520 109 v6 M520 185 v6 M459 170 h6 M535 170 h6"></path><path d="M528 109 v6 M528 185 v6 M459 178 h6 M535 178 h6"></path></g><text fill="#8bb8aa" font-size="12" text-anchor="middle" x="500" y="154">MCU</text><g class="process"><rect fill="#102e29" height="70" rx="5" stroke="#6ee7b7" width="70" x="465" y="115"></rect><text font-size="19" font-weight="bold" text-anchor="middle" x="500" y="155"><tspan fill="var(--input)">A</tspan><tspan fill="#d1fae5">→</tspan><tspan fill="var(--output)">B</tspan></text></g><rect fill="#a0adbb" height="22" rx="3" width="17" x="400" y="139"></rect><rect fill="#a0adbb" height="22" rx="3" width="17" x="583" y="139"></rect></g>
+<!-- monitor -->
+<g><rect fill="url(#case)" height="145" rx="10" stroke="#78879b" stroke-width="1.5" width="195" x="775" y="68"></rect><rect fill="#080e17" height="119" rx="4" width="175" x="785" y="78"></rect><path d="M785 98 H960" stroke="#344256"></path><circle cx="795" cy="88" fill="#64748b" r="2.5"></circle><circle cx="805" cy="88" fill="#64748b" r="2.5"></circle><text fill="#94a3b8" font-size="8" text-anchor="middle" x="872" y="91">TEXT INPUT</text><text class="idle" fill="#53647a" font-size="35" text-anchor="middle" x="872" y="160">_</text><text class="result" fill="var(--output)" font-family="monospace" font-size="65" font-weight="600" text-anchor="middle" x="872" y="169">B</text><path d="M872 213 V232 M840 234 H904" stroke="#718096" stroke-linecap="round" stroke-width="7"></path></g>
+<!-- moving packets -->
+<g class="packet-a"><rect fill="#10384d" height="36" rx="7" stroke="var(--input)" stroke-width="2" width="36" x="212" y="132"></rect><text fill="var(--input)" font-size="22" font-weight="bold" text-anchor="middle" x="230" y="157">A</text></g><g class="packet-b"><rect fill="#4b2c1b" height="36" rx="7" stroke="var(--output)" stroke-width="2" width="36" x="482" y="132"></rect><text fill="var(--output)" font-size="22" font-weight="bold" text-anchor="middle" x="500" y="157">B</text></g><g class="static" font-size="22" font-weight="bold" text-anchor="middle"><text fill="var(--input)" x="320" y="143">A →</text><text fill="var(--output)" x="680" y="143">B →</text></g>
+<g font-size="16" font-weight="700" letter-spacing="1" text-anchor="middle"><text fill="#e2e8f0" x="128" y="263">KEYBOARD</text><text fill="#6ee7b7" x="500" y="263">USB_HIJACKER</text><text fill="#e2e8f0" x="872" y="263">HOST PC</text></g><g fill="#94a3b8" font-size="12" text-anchor="middle"><text x="128" y="283">Original input</text><text x="500" y="283">Signal transformation</text><text x="872" y="283">Modified input</text></g></svg></div>
+              <div class="signal-legend"><span class="in">● 원본 입력 A</span><span class="out">● 변환 입력 B</span><span>KEYBOARD → USB_HIJACKER → HOST PC</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-bottom">
+          <div class="hero-facts">
+            <div class="fact"><span class="fact-value">USB HOST / DEVICE</span><span class="fact-label">HID EVENT PIPELINE</span></div>
+            <div class="fact"><span class="fact-value">TEENSY + ESP8266</span><span class="fact-label">DUAL MCU DESIGN</span></div>
+            <div class="fact"><span class="fact-value">C / C++</span><span class="fact-label">FIRMWARE IMPLEMENTATION</span></div>
+          </div>
+          <a class="scroll-hint" href="#about">SCROLL TO EXPLORE</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="about" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <div class="reveal">
+          <span class="eyebrow">01 / ENGINEERING MINDSET</span>
+          <h2 class="section-heading" id="about-title">작동 원리를 파고들고,<br><span class="teal">실제로 만듭니다.</span></h2>
+          <p class="about-intro">필요한 기능을 상상하는 것에서 멈추지 않습니다. <b>데이터시트와 규격을 읽고</b>, 하드웨어 구성을 검토하고, 제한된 자원 안에서 펌웨어를 설계해 동작하는 결과물로 완성합니다.</p>
+          <p class="about-intro">대표 개인 프로젝트 <b>USB_Hijacker</b>에서는 USB 키보드의 입력 이벤트를 처리하고, 키 매핑·매크로·다국어 키패드 기능을 단계적으로 확장했습니다.</p>
+          <p class="about-mini">// IDEA → DATASHEET → CIRCUIT → FIRMWARE → TEST</p>
+        </div>
+        <div class="capabilities">
+          <div class="capability reveal"><div class="capability-no">0x01 / HARDWARE</div><div class="capability-name">MCU & Peripherals</div><div class="capability-desc">Teensy 4.1 · Pro Micro<br>ESP8266 · USB Host Shield</div></div>
+          <div class="capability reveal"><div class="capability-no">0x02 / PROTOCOL</div><div class="capability-name">Signals & Buses</div><div class="capability-desc">USB HID · UART · SPI<br>GPIO Handshake</div></div>
+          <div class="capability reveal"><div class="capability-no">0x03 / FIRMWARE</div><div class="capability-name">Event-driven Logic</div><div class="capability-desc">Keyboard Parser · Keymapper<br>Macro Engine · KorPad</div></div>
+          <div class="capability reveal"><div class="capability-no">0x04 / INTEGRATION</div><div class="capability-name">End-to-end Design</div><div class="capability-desc">SD Configuration · Web UI<br>Inter-MCU Communication</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section architecture" id="architecture" aria-labelledby="architecture-title">
+      <div class="container">
+        <div class="arch-head reveal">
+          <span class="eyebrow">02 / INTERACTIVE SYSTEM ARCHITECTURE</span>
+          <h2 id="architecture-title" class="section-heading">신호가 흐르는 <span class="teal">시스템</span></h2>
+          <p class="section-lead">실제 USB_Hijacker 프로젝트의 하드웨어 연결을 시각화했습니다. 구성을 전환하거나 통신 경로를 선택해 보세요. <strong style="color:#d1eeec">스크롤 위치에 따라 데이터 패킷이 경로를 따라 이동</strong>합니다.</p>
+        </div>
+        <div class="arch-toolbar reveal">
+          <div class="segmented" role="group" aria-label="하드웨어 버전 선택">
+            <button type="button" data-mode="teensy" aria-pressed="true">TEENSY 4.1 + ESP8266</button>
+            <button type="button" data-mode="legacy" aria-pressed="false">PRO MICRO · LEGACY</button>
+          </div>
+          <div class="bus-controls" aria-label="강조할 통신 경로" id="bus-controls">
+            <button class="bus-button" type="button" data-bus="all" aria-pressed="true">ALL</button>
+            <button class="bus-button" type="button" data-bus="usb" aria-pressed="false">USB HID</button>
+            <button class="bus-button" type="button" data-bus="uart" aria-pressed="false">UART / GPIO</button>
+            <button class="bus-button" type="button" data-bus="wifi" aria-pressed="false">WI-FI</button>
+          </div>
+        </div>
+        <div class="arch-panel reveal">
+          <div class="arch-panel-top"><span><span class="green">●</span> <span id="arch-label">LIVE TOPOLOGY / TEENSY 4.1 + ESP8266</span></span><span>DATA FLOW / SCROLL-DRIVEN VISUALIZATION</span></div>
+          <div class="arch-scroll" tabindex="0" aria-label="아키텍처 다이어그램, 화면이 좁을 경우 가로 스크롤 가능">
+            <div class="arch-view" id="arch-teensy">
+              <svg class="arch-svg" viewBox="0 0 1140 570" role="img" aria-labelledby="teensy-svg-title teensy-svg-desc">
+                <title id="teensy-svg-title">Teensy 4.1과 ESP8266을 사용하는 USB_Hijacker 아키텍처</title>
+                <desc id="teensy-svg-desc">USB Keyboard는 USB Host를 통해 Teensy에 연결되고, Teensy는 USB Device를 통해 PC와 연결됩니다. Teensy와 ESP8266은 UART와 GPIO로 연결되며 ESP8266은 Wi-Fi 웹 UI를 제공합니다.</desc>
+                <g class="flow-lines">
+                  <path class="wire-back" d="M252 267H330"/><path id="path-t-keyboard" class="wire" data-bus-type="usb" d="M252 267H330"/>
+                  <path class="wire-back" d="M604 267H846"/><path id="path-t-host" class="wire" data-bus-type="usb" d="M604 267H846"/>
+                  <path class="wire-back" d="M467 365V419"/><path id="path-t-serial" class="wire serial" data-bus-type="uart" d="M467 365V419"/>
+                  <path class="wire-back" d="M604 476H846"/><path id="path-t-wifi" class="wire wifi" data-bus-type="wifi" d="M604 476H846"/>
+                </g>
+                <text x="263" y="249" class="bus-text">USB HOST</text><text x="692" y="249" class="bus-text">USB DEVICE · HID</text>
+                <text x="480" y="399" class="bus-text amber">UART / GPIO</text><text x="695" y="461" class="bus-text">WI-FI / HTTP</text>
+                <g transform="translate(28 180)">
+                  <rect class="diagram-node" width="224" height="174" rx="8"/>
+                  <rect x="21" y="24" width="40" height="49" rx="5" fill="none" stroke="#65bfb0" stroke-width="2"/>
+                  <path d="M29 41h24M29 51h24M29 61h24" stroke="#65bfb0"/>
+                  <text x="23" y="106" class="diagram-id">INPUT_01</text><text x="23" y="132" class="diagram-label">USB Keyboard</text><text x="23" y="151" class="diagram-caption">physical input device</text>
+                  <circle cx="224" cy="87" r="5" class="diagram-pin"/>
+                </g>
+                <g transform="translate(330 157)">
+                  <rect class="diagram-node primary" width="274" height="208" rx="8"/>
+                  <rect x="20" y="20" width="56" height="52" rx="4" fill="#163d40" stroke="#62d4bb"/>
+                  <path d="M31 20V11M44 20V11M57 20V11M70 20V11M31 72v9M44 72v9M57 72v9M70 72v9" stroke="#70bbab" stroke-width="2"/>
+                  <rect x="32" y="32" width="32" height="28" rx="3" fill="#0d262c"/>
+                  <text x="32" y="50" fill="#7eead7" font-size="8">M7</text>
+                  <text x="92" y="39" class="diagram-id">PRIMARY MCU</text>
+                  <text x="20" y="119" class="diagram-label" style="font-size:24px">Teensy 4.1</text>
+                  <text x="20" y="143" class="diagram-caption">USB Host + Device</text>
+                  <path d="M20 160H253" stroke="#39676a"/>
+                  <text x="20" y="185" class="diagram-small">Parser · Mapper · Macro · KorPad</text>
+                  <circle cx="0" cy="110" r="5" class="diagram-pin"/><circle cx="274" cy="110" r="5" class="diagram-pin"/><circle cx="137" cy="208" r="5" class="diagram-pin amber"/>
+                </g>
+                <g transform="translate(846 180)">
+                  <rect class="diagram-node" width="264" height="174" rx="8"/>
+                  <rect x="20" y="25" width="51" height="38" rx="2" fill="none" stroke="#68bdb6" stroke-width="2"/>
+                  <path d="M27 72h36m-18-9v9" stroke="#68bdb6" stroke-width="2"/>
+                  <text x="21" y="108" class="diagram-id">OUTPUT_01</text><text x="21" y="134" class="diagram-label">Host PC</text><text x="21" y="154" class="diagram-caption">USB HID keyboard device</text>
+                  <circle cx="0" cy="87" r="5" class="diagram-pin"/>
+                </g>
+                <g transform="translate(330 419)">
+                  <rect class="diagram-node aux" width="274" height="116" rx="8"/>
+                  <rect x="19" y="24" width="32" height="32" rx="3" fill="#1f4145" stroke="#608984"/>
+                  <path d="M27 34h16M27 41h16M27 48h16" stroke="#70d4bb"/>
+                  <text x="65" y="35" class="diagram-id">SECONDARY MCU</text>
+                  <text x="19" y="79" class="diagram-label">ESP8266</text><text x="19" y="99" class="diagram-caption">LOLIN D1 mini Pro · AP / Web</text>
+                  <circle cx="137" cy="0" r="5" class="diagram-pin amber"/><circle cx="274" cy="57" r="5" class="diagram-pin"/>
+                </g>
+                <g transform="translate(846 423)">
+                  <rect class="diagram-node aux" width="264" height="106" rx="8"/>
+                  <path d="M20 24h56v41H20zM20 35h56" fill="none" stroke="#74bcb3" stroke-width="2"/>
+                  <circle cx="27" cy="30" r="2" fill="#74bcb3"/><circle cx="34" cy="30" r="2" fill="#74bcb3"/>
+                  <text x="92" y="35" class="diagram-id">CONTROL</text><text x="92" y="62" class="diagram-label" style="font-size:16px">Web UI</text><text x="92" y="80" class="diagram-caption">file / macro editor</text>
+                  <circle cx="0" cy="53" r="5" class="diagram-pin"/>
+                </g>
+                <circle class="packet" r="5" data-packet-path="path-t-keyboard" data-bus-type="usb"/>
+                <circle class="packet" r="5" data-packet-path="path-t-host" data-bus-type="usb"/>
+                <circle class="packet serial" r="5" data-packet-path="path-t-serial" data-bus-type="uart"/>
+                <circle class="packet wifi" r="5" data-packet-path="path-t-wifi" data-bus-type="wifi"/>
+              </svg>
+            </div>
+            <div class="arch-view" id="arch-legacy" hidden>
+              <svg class="arch-svg" viewBox="0 0 1140 570" role="img" aria-labelledby="legacy-svg-title legacy-svg-desc">
+                <title id="legacy-svg-title">Pro Micro 5V 이전 버전 USB_Hijacker 아키텍처</title>
+                <desc id="legacy-svg-desc">USB Keyboard가 UHS mini v2.0 USB Host Shield에 입력되고, SPI 버스를 통해 Pro Micro 5V와 연결됩니다. Pro Micro는 USB HID로 PC에 출력을 보내고 GPIO로 부저를 구동합니다.</desc>
+                <g class="flow-lines">
+                  <path class="wire-back" d="M242 264H296"/><path id="path-l-keyboard" class="wire" data-bus-type="usb" d="M242 264H296"/>
+                  <path class="wire-back" d="M520 264H598"/><path id="path-l-spi" class="wire spi" data-bus-type="spi" d="M520 264H598"/>
+                  <path class="wire-back" d="M816 264H872"/><path id="path-l-host" class="wire" data-bus-type="usb" d="M816 264H872"/>
+                  <path class="wire-back" d="M707 356V422"/><path id="path-l-gpio" class="wire serial" data-bus-type="gpio" d="M707 356V422"/>
+                </g>
+                <text x="245" y="244" class="bus-text">USB</text><text x="533" y="244" class="bus-text amber">SPI</text><text x="827" y="244" class="bus-text">USB</text><text x="720" y="391" class="bus-text amber">GPIO</text>
+                <g transform="translate(28 184)"><rect class="diagram-node" width="214" height="160" rx="8"/><text x="19" y="48" class="diagram-id">INPUT_01</text><text x="19" y="92" class="diagram-label">USB Keyboard</text><text x="19" y="117" class="diagram-caption">physical keyboard</text><circle cx="214" cy="80" r="5" class="diagram-pin"/></g>
+                <g transform="translate(296 184)"><rect class="diagram-node aux" width="224" height="160" rx="8"/><text x="20" y="46" class="diagram-id">USB HOST</text><text x="20" y="84" class="diagram-label">UHS mini v2.0</text><text x="20" y="109" class="diagram-caption">USB Host Shield</text><text x="20" y="131" class="diagram-caption">MAX3421E / SPI</text><circle cx="0" cy="80" r="5" class="diagram-pin"/><circle cx="224" cy="80" r="5" class="diagram-pin amber"/></g>
+                <g transform="translate(598 172)"><rect class="diagram-node primary" width="218" height="184" rx="8"/><text x="20" y="38" class="diagram-id">PRIMARY MCU</text><text x="20" y="79" class="diagram-label">Pro Micro 5V</text><text x="20" y="103" class="diagram-caption">ATmega32U4</text><path d="M19 121H197" stroke="#39676a"/><text x="20" y="146" class="diagram-small">KBD Parser · Macros</text><text x="20" y="164" class="diagram-small">KorPad · HID output</text><circle cx="0" cy="92" r="5" class="diagram-pin amber"/><circle cx="218" cy="92" r="5" class="diagram-pin"/><circle cx="109" cy="184" r="5" class="diagram-pin amber"/></g>
+                <g transform="translate(872 184)"><rect class="diagram-node" width="238" height="160" rx="8"/><text x="19" y="46" class="diagram-id">OUTPUT_01</text><text x="19" y="92" class="diagram-label">Host PC</text><text x="19" y="118" class="diagram-caption">USB HID device</text><circle cx="0" cy="80" r="5" class="diagram-pin"/></g>
+                <g transform="translate(598 422)"><rect class="diagram-node aux" width="218" height="98" rx="8"/><text x="20" y="33" class="diagram-id">FEEDBACK</text><text x="20" y="67" class="diagram-label">Piezo Buzzer</text><text x="20" y="85" class="diagram-caption">GPIO pin 2</text><circle cx="109" cy="0" r="5" class="diagram-pin amber"/></g>
+                <circle class="packet" r="5" data-packet-path="path-l-keyboard" data-bus-type="usb"/>
+                <circle class="packet spi" r="5" data-packet-path="path-l-spi" data-bus-type="spi"/>
+                <circle class="packet" r="5" data-packet-path="path-l-host" data-bus-type="usb"/>
+                <circle class="packet serial" r="5" data-packet-path="path-l-gpio" data-bus-type="gpio"/>
+              </svg>
+            </div>
+          </div>
+          <div class="flow-caption"><span id="arch-caption">KEYBOARD → USB HOST → TEENSY 4.1 → USB HID → PC</span><span>◌ CONCEPTUAL DATA FLOW · NOT A LIVE MEASUREMENT</span></div>
+        </div>
+        <div class="arch-footnotes reveal" id="arch-footnotes">
+          <div class="arch-note"><span class="arch-note-no">01</span><div><strong id="arch-note1-title">USB HID 이벤트 파이프라인</strong><p id="arch-note1-desc">Teensy 4.1이 키보드 입력 이벤트를 수신하고 Parser → Keymapper / Macro / KorPad를 거쳐 PC로 출력합니다.</p></div></div>
+          <div class="arch-note"><span class="arch-note-no">02</span><div><strong id="arch-note2-title">DarkJunction 시리얼 브리지</strong><p id="arch-note2-desc">ESP8266의 웹 관리 기능을 별도 MCU로 분리하고, UART 및 디지털 핸드셰이크로 SD 파일 작업을 연결합니다.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section projects" id="projects" aria-labelledby="projects-title">
+      <div class="container">
+        <div class="section-top reveal">
+          <div><span class="eyebrow">03 / SELECTED WORK</span><h2 class="section-heading" id="projects-title">구현한 <span class="teal">프로젝트</span></h2></div>
+          <p class="section-lead">하나의 아이디어를 실제 하드웨어와 펌웨어로 발전시키며 구축한 주요 서브시스템입니다.</p>
+        </div>
+        <div class="projects-grid">
+          <article class="project-card reveal"><svg class="card-trace" viewBox="0 0 165 80" aria-hidden="true"><path d="M165 12h-34l-19 19H81L64 47H7m158-17h-28l-20 20H96M165 66h-41l-12-12H77"/><circle cx="7" cy="47" r="4" fill="#47b7a6"/><circle cx="96" cy="50" r="3" fill="#47b7a6"/></svg>
+            <div><div class="card-index">PJT_01 // MAIN SYSTEM</div><h3 class="project-title">USB_Hijacker<br>Core Firmware</h3><div class="project-eng">REAL-TIME USB INPUT PROCESSING</div><p class="project-desc">USB Host에서 수신한 키보드 입력을 처리하고 USB HID 장치로 재전송하는 코어 시스템. 키 매핑, 매크로 녹화·재생, KorPad 한글 입력을 모듈로 구성했습니다.</p><div class="stack"><span class="chip strong">C / C++</span><span class="chip">Teensy 4.1</span><span class="chip">USB HID</span><span class="chip">SD Card</span></div></div>
+            <div class="card-bottom"><span class="card-detail">FIRMWARE / EVENT PIPELINE</span><a class="card-link" href="https://github.com/AliveSophist/USB_Hijacker/tree/master/USB_Hijacker_Teensy_4.1" target="_blank" rel="noopener noreferrer">SOURCE ↗</a></div>
+          </article>
+          <article class="project-card reveal"><svg class="card-trace" viewBox="0 0 165 80" aria-hidden="true"><path d="M165 12h-34l-19 19H81L64 47H7m158-17h-28l-20 20H96M165 66h-41l-12-12H77"/><circle cx="7" cy="47" r="4" fill="#eac275"/><circle cx="96" cy="50" r="3" fill="#eac275"/></svg>
+            <div><div class="card-index">PJT_02 // SERIAL BRIDGE</div><h3 class="project-title">DarkJunction<br>& Wi-Fi Accomplice</h3><div class="project-eng">INTER-MCU PROTOCOL / WEB CONTROL</div><p class="project-desc">Teensy와 ESP8266 사이에 UART 기반 통신 프로토콜을 구성했습니다. ESP8266의 AP·웹 인터페이스를 통해 설정 파일 관리와 매크로 편집 기능을 연결합니다.</p><div class="stack"><span class="chip warm">UART</span><span class="chip">ESP8266</span><span class="chip">GPIO</span><span class="chip">Web UI</span></div></div>
+            <div class="card-bottom"><span class="card-detail">COMMUNICATION / INTEGRATION</span><a class="card-link" href="https://github.com/AliveSophist/USB_Hijacker/tree/master/WIFI_Accomplice_LOLIN_D1_mini_Pro" target="_blank" rel="noopener noreferrer">SOURCE ↗</a></div>
+          </article>
+          <article class="project-card reveal"><svg class="card-trace" viewBox="0 0 165 80" aria-hidden="true"><path d="M165 12h-34l-19 19H81L64 47H7m158-17h-28l-20 20H96M165 66h-41l-12-12H77"/><circle cx="7" cy="47" r="4" fill="#47b7a6"/><circle cx="96" cy="50" r="3" fill="#47b7a6"/></svg>
+            <div><div class="card-index">PJT_03 // INPUT ENGINE</div><h3 class="project-title">KorPad<br>Hangul Input Engine</h3><div class="project-eng">FINITE-STATE INPUT LOGIC</div><p class="project-desc">숫자 키패드로 천지인·나랏글 방식의 한글을 조합하도록 입력 상태와 히스토리를 설계한 모듈. 영문·가나 입력 모드도 고려했습니다.</p><div class="stack"><span class="chip strong">C / C++</span><span class="chip">State Machine</span><span class="chip">Keypad</span><span class="chip">Hangul</span></div></div>
+            <div class="card-bottom"><span class="card-detail">INPUT METHOD / STATE LOGIC</span><a class="card-link" href="https://github.com/AliveSophist/USB_Hijacker" target="_blank" rel="noopener noreferrer">REPOSITORY ↗</a></div>
+          </article>
+          <article class="project-card reveal"><svg class="card-trace" viewBox="0 0 165 80" aria-hidden="true"><path d="M165 12h-34l-19 19H81L64 47H7m158-17h-28l-20 20H96M165 66h-41l-12-12H77"/><circle cx="7" cy="47" r="4" fill="#eac275"/><circle cx="96" cy="50" r="3" fill="#eac275"/></svg>
+            <div><div class="card-index">PJT_04 // LEGACY HARDWARE</div><h3 class="project-title">Pro Micro 5V<br>Prototype</h3><div class="project-eng">ATMEGA32U4 / USB HOST SHIELD</div><p class="project-desc">Pro Micro 5V와 UHS mini v2.0을 SPI로 연결한 초기 구성. 입력 이벤트 파싱, 하드코딩 매크로, KorPad를 구현하며 이후 시스템 확장의 기반을 만들었습니다.</p><div class="stack"><span class="chip warm">ATmega32U4</span><span class="chip">SPI</span><span class="chip">USB Host Shield</span><span class="chip">Arduino</span></div></div>
+            <div class="card-bottom"><span class="card-detail">PROTOTYPE / HARDWARE</span><a class="card-link" href="https://github.com/AliveSophist/USB_Hijacker/tree/master/USB_Hijacker_Pro_Micro_5V" target="_blank" rel="noopener noreferrer">SOURCE ↗</a></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section timeline" id="timeline" aria-labelledby="timeline-title">
+      <div class="container timeline-shell">
+        <div class="timeline-head reveal"><span class="eyebrow">04 / PROBLEM → SOLUTION</span><h2 class="section-heading" id="timeline-title">설계 과제와<br><span class="teal">발전 과정</span></h2><p class="section-lead">처음부터 모든 기능이 완성된 시스템은 아니었습니다. 하드웨어의 제약과 확장 요구에 따라 설계 선택을 바꾸며 기능을 누적했습니다.</p><p class="about-mini">$ tail -f ./engineering.log<br><span class="teal">[OK]</span> DESIGN HISTORY LOADED</p></div>
+        <div class="timeline-log">
+          <article class="log-item reveal"><div class="log-meta">PHASE 01 / PROTOTYPING</div><div class="log-card"><div class="log-title">작은 MCU로 USB 입력을 다루다</div><div class="log-code"><div><span class="key">[CHALLENGE]</span> Pro Micro만으로는 외부 USB 키보드를 직접 호스팅하기 어려움</div><div><span class="key">[DESIGN]</span> <span class="cmd">UHS mini v2.0</span> + <span class="cmd">SPI</span>로 USB Host 기능 확장</div><div class="log-split"><span class="out">키 이벤트 파싱 · HID 재출력 · 하드코딩 매크로 구성</span></div></div></div></article>
+          <article class="log-item reveal"><div class="log-meta">PHASE 02 / MODULARIZATION</div><div class="log-card"><div class="log-title">기능 확장과 설정 변경의 비용을 줄이다</div><div class="log-code"><div><span class="key">[CHALLENGE]</span> 코드에 고정된 매핑·매크로는 변경과 확장에 제약이 있음</div><div><span class="key">[DESIGN]</span> <span class="cmd">Teensy 4.1</span>로 이전, SD 파일 기반 설정 및 기능 모듈화</div><div class="log-split"><span class="out">Keymapper · Macro Recorder/Player · KorPad 통합</span></div></div></div></article>
+          <article class="log-item reveal"><div class="log-meta">PHASE 03 / SYSTEM INTEGRATION</div><div class="log-card"><div class="log-title">실시간 입력 처리와 원격 관리 역할을 분리하다</div><div class="log-code"><div><span class="key">[CHALLENGE]</span> HID 이벤트 처리와 Wi-Fi 관리 기능의 역할 분리 필요</div><div><span class="key">[DESIGN]</span> <span class="cmd">ESP8266</span> 보조 MCU + <span class="cmd">DarkJunction UART</span> 브리지</div><div class="log-split"><span class="out">AP 웹 UI · SD 파일 편집 · 매크로 관리 기능 연결</span></div></div></div></article>
+          <article class="log-item reveal"><div class="log-meta">ENGINEERING PRINCIPLE / CONTINUE</div><div class="log-card"><div class="log-title">상상한 기능을 검증 가능한 구현으로</div><div class="log-code"><div><span class="key">[PROCESS]</span> 요구 기능 구분 → 회로 및 프로토콜 검토 → 구현 → 반복 개선</div><div><span class="key">[FOCUS]</span> <span class="highlight">데이터시트 · USB HID 규격 · 펌웨어 구조 · 실제 동작</span></div><div class="log-split"><span class="out">프로젝트 코드와 설계 맥락을 함께 남기는 개발</span></div></div></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section details" id="details" aria-labelledby="details-title">
+      <div class="container">
+        <div class="section-top reveal"><div><span class="eyebrow">05 / A CLOSER LOOK</span><h2 class="section-heading" id="details-title">동작과 <span class="teal">하드웨어</span></h2></div><p class="section-lead">사용자 기능과 실물 형상을 재구성한 인터랙티브 3D 하드웨어 뷰어를 살펴볼 수 있습니다.</p></div>
+        <div class="details-grid">
+          <div class="detail-panel reveal"><h3>USER-FACING FEATURES</h3><p>Teensy 4.1 기반 펌웨어에 구현된 주요 사용자 기능입니다. 실제 사용 범위는 설치된 펌웨어와 SD 파일 구성에 따릅니다.</p><div class="feature-rows">
+            <div class="feature-row"><span class="feature-symbol">01</span><div><b>Keymapper</b>SD 카드 매핑 규칙을 읽어 키 이벤트 변환, 조건부 매핑, Rapidfire 처리</div></div>
+            <div class="feature-row"><span class="feature-symbol">02</span><div><b>Macro Recorder / Player</b>키 입력과 지연 시간을 기록하고 SD 파일을 통해 매크로 재생</div></div>
+            <div class="feature-row"><span class="feature-symbol">03</span><div><b>KorPad</b>천지인·나랏글 한글 조합과 입력 모드 전환</div></div>
+            <div class="feature-row"><span class="feature-symbol">04</span><div><b>Wi-Fi File Management</b>ESP8266 웹 인터페이스를 통한 파일 편집과 매크로 관리</div></div>
+          </div></div>
+           <div class="hardware-panel reveal" id="hardware-explorer">
+             <div class="hardware-heading"><h3>INTERACTIVE 3D HARDWARE EXPLORER</h3><p>Fritzing 배선 이미지 대신 실제 하드웨어 구성을 3D로 탐색할 수 있습니다. 회전·확대, 조립/분해, 배선 강조 및 개별 부품 검사를 지원합니다. 외형과 일부 결선은 참고 자료 기반 추정 모델입니다.</p></div>
+             <iframe class="hardware-embed" title="USB_HIJACKER 3D 하드웨어 뷰어" loading="lazy" allow="fullscreen" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1, viewport-fit=cover&quot;&gt;&lt;title&gt;USB_HIJACKER — Hardware Explorer&lt;/title&gt;&lt;style&gt;
+:root{color-scheme:dark;--bg:#0a1015;--panel:#101a22;--line:#263a40;--accent:#71e5b7;--muted:#99aeb7;--text:#e4edf0;font-family:Pretendard,&quot;Noto Sans KR&quot;,system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}body.transparent{background:transparent}button,input{font:inherit}button{cursor:pointer;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:5px;padding:9px 12px;transition:background .15s,color .15s,border .15s}button:hover,button:focus-visible{color:var(--text);border-color:var(--accent);outline:0}button[aria-pressed=true]{color:var(--accent);border-color:#528e7a;background:#18332e}button:disabled{opacity:.35;cursor:default}.mono,button,.eyebrow,.small,.number,.axis{font-family:&quot;JetBrains Mono&quot;,&quot;Consolas&quot;,monospace}.shell{max-width:1500px;margin:auto;padding:24px 30px 20px}.top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding-bottom:18px;border-bottom:1px solid var(--line)}.eyebrow{font-size:10px;letter-spacing:.19em;color:var(--accent)}h1{font-size:clamp(20px,3.3vw,34px);letter-spacing:-.045em;margin:7px 0 0;font-weight:650}h1 span{color:var(--muted);font-size:.6em;font-weight:400;letter-spacing:0}.topright{font-size:10px;color:var(--muted);text-align:right;line-height:1.9}.dot{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-right:6px}.modebar{display:flex;gap:6px;align-items:center;padding:15px 0}.modebar button{font-size:12px;letter-spacing:.025em;min-width:110px}.modebar .tip{margin-left:auto;color:var(--muted);font-size:11px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 286px;gap:14px}.viewport{position:relative;min-height:470px;height:clamp(470px,64vh,760px);border:1px solid var(--line);border-radius:8px;overflow:hidden;background:radial-gradient(ellipse at 48% 45%,#17252c 0%,#0c151b 58%,#0a1015 100%)}body.transparent .viewport{background:transparent}.stage{position:absolute;inset:0;touch-action:none;overflow:hidden;outline:none}.stage canvas{width:100%;height:100%;display:block;touch-action:none}.hud{position:absolute;inset:18px 18px auto;pointer-events:none;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.hud strong{font-size:13px;color:var(--text);display:block;margin-top:6px;font-weight:550}.hud .small{font-size:10px;color:var(--muted);letter-spacing:.08em}.axis{position:absolute;bottom:18px;left:16px;width:62px;height:62px;pointer-events:none}.viewhelp{position:absolute;bottom:16px;right:17px;color:#a4b5ba;font-size:10px;letter-spacing:.025em;pointer-events:none}.tag{position:absolute;pointer-events:none;padding:7px 9px;border-left:2px solid var(--accent);background:#0a1015e8;color:var(--accent);font-size:11px;white-space:nowrap;transform:translate(12px,-100%);display:none}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-width:0;display:flex;flex-direction:column}.section{padding:16px 14px;border-bottom:1px solid var(--line)}.section:last-child{border:0}.sectiontitle{font-size:10px;letter-spacing:.13em;color:var(--muted);margin:0 0 12px}.modulelist{display:grid;gap:5px}.module{display:grid;grid-template-columns:25px 1fr 13px;align-items:center;gap:6px;text-align:left;width:100%;padding:10px 8px;border-color:transparent;background:#0e171d;font-family:inherit;font-size:12px;line-height:1.35}.module .number{font-size:10px;color:var(--accent);opacity:.8}.module .arrow{font-size:13px;color:#67817e}.details{flex:1;min-height:155px}.details h2.sectiontitle{font-size:10px;letter-spacing:.12em}.details h2{font-size:17px;letter-spacing:-.02em;margin:4px 0 8px}.details p{font-size:12px;line-height:1.75;color:var(--muted);margin:8px 0}.details .status{display:inline-block;font-size:10px;padding:4px 7px;border:1px solid #52604b;color:#d6c397;border-radius:3px}.kv{display:grid;grid-template-columns:68px 1fr;gap:7px;font-size:11px;line-height:1.55;margin:12px 0}.kv dt{color:var(--muted)}.kv dd{margin:0;color:var(--text)}.wirelist{display:grid;gap:5px}.wirelist button{display:flex;align-items:center;gap:8px;text-align:left;font-family:inherit;font-size:12px;padding:7px 8px}.swatch{height:9px;width:9px;border-radius:50%;border:1px solid #a2b2ae;flex-shrink:0}.controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid var(--line);border-radius:7px;padding:11px 13px;margin-top:12px;background:var(--panel)}.range{display:flex;gap:9px;align-items:center;min-width:260px;flex:1}.range label{font-size:11px;color:var(--muted);white-space:nowrap}input[type=range]{accent-color:var(--accent);min-width:70px;width:100%;cursor:pointer}.pct{min-width:40px;text-align:right;color:var(--accent);font-size:12px}.viewbuttons{display:flex;gap:5px;flex-wrap:wrap}.viewbuttons button{font-size:11px;padding:7px 10px}.foot{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:11px;line-height:1.65;margin:13px 0}.foot details{max-width:850px}.foot summary{cursor:pointer;color:var(--muted)}.foot a{color:var(--accent)}.error{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:var(--bg);padding:30px;z-index:5}.error[hidden],[hidden]{display:none!important}.badge{color:var(--accent);font-size:10px;letter-spacing:.06em}.loading{position:absolute;inset:0;display:grid;place-content:center;color:var(--muted);font-size:13px;pointer-events:none}.loading[hidden]{display:none}.sectionnote{color:#81969d;font-size:11px;line-height:1.6;margin:9px 0 0}.wiretitle{color:#d6c397;font-size:11px;line-height:1.5}.subbuttons{display:flex;gap:4px;flex-wrap:wrap;margin-top:9px}.subbuttons button{font-size:10px;padding:5px 7px}.mobilehint{display:none}@media(max-width:850px){.shell{padding:15px 12px}.layout{grid-template-columns:1fr}.viewport{height:clamp(360px,56vh,540px);min-height:350px}.panel{display:grid;grid-template-columns:1fr 1fr}.section{border-bottom:0;border-right:1px solid var(--line)}.section:last-child{border-right:0}.modebar .tip{display:none}.modebar{gap:5px}.modebar button{min-width:0;flex:1;padding:9px 4px;font-size:10px}.topright{display:none}.controls{gap:9px}.viewhelp{font-size:9px}.section{padding:12px 10px}.mobilehint{display:block}.module{font-size:11px}}@media(max-width:470px){.panel{display:flex}.section{border-right:0;border-bottom:1px solid var(--line)}.modulelist{grid-template-columns:1fr 1fr}.viewhelp{max-width:190px;text-align:right}.range{min-width:100%}.hud{inset:12px}.foot{font-size:10px}.viewport{height:410px}.top{padding-bottom:12px}}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;main class=&quot;shell&quot; id=&quot;uxh-root&quot;&gt;&lt;header class=&quot;top&quot;&gt;&lt;div&gt;&lt;div class=&quot;eyebrow&quot;&gt;EMBEDDED SYSTEMS / PHYSICAL DESIGN&lt;/div&gt;&lt;h1&gt;USB_HIJACKER &lt;span&gt;/ HARDWARE EXPLORER&lt;/span&gt;&lt;/h1&gt;&lt;/div&gt;&lt;div class=&quot;topright mono&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;&lt;span id=&quot;engine&quot;&gt;INITIALIZING&lt;/span&gt;&lt;br&gt;5 MODULES · MM SCALE&lt;/div&gt;&lt;/header&gt;&lt;nav class=&quot;modebar&quot; aria-label=&quot;관찰 모드&quot;&gt;&lt;button data-mode=&quot;assembly&quot; aria-pressed=&quot;true&quot;&gt;01 ASSEMBLY&lt;/button&gt;&lt;button data-mode=&quot;exploded&quot; aria-pressed=&quot;false&quot;&gt;02 EXPLODED&lt;/button&gt;&lt;button data-mode=&quot;wiring&quot; aria-pressed=&quot;false&quot;&gt;03 WIRING&lt;/button&gt;&lt;button data-mode=&quot;components&quot; aria-pressed=&quot;false&quot;&gt;04 COMPONENTS&lt;/button&gt;&lt;span class=&quot;tip mono&quot;&gt;INTERACTIVE HARDWARE / REV. STUDY&lt;/span&gt;&lt;/nav&gt;&lt;div class=&quot;layout&quot;&gt;&lt;div class=&quot;viewport&quot;&gt;&lt;div class=&quot;stage&quot; tabindex=&quot;0&quot; aria-label=&quot;3D 하드웨어 뷰어&quot;&gt;&lt;/div&gt;&lt;div class=&quot;loading&quot; id=&quot;loading&quot;&gt;INITIALIZING 3D MODEL…&lt;/div&gt;&lt;div class=&quot;hud&quot;&gt;&lt;div&gt;&lt;span class=&quot;small&quot; id=&quot;modeLabel&quot;&gt;01 / ASSEMBLY&lt;/span&gt;&lt;strong id=&quot;sceneTitle&quot;&gt;Assembled hardware&lt;/strong&gt;&lt;/div&gt;&lt;span class=&quot;badge mono&quot; id=&quot;sceneStatus&quot;&gt;REFERENCE MODEL&lt;/span&gt;&lt;/div&gt;&lt;svg class=&quot;axis&quot; viewBox=&quot;0 0 64 64&quot; aria-hidden=&quot;true&quot;&gt;&lt;circle cx=&quot;30&quot; cy=&quot;30&quot; r=&quot;3&quot; fill=&quot;#a5b7bc&quot;/&gt;&lt;g id=&quot;axes&quot;&gt;&lt;/g&gt;&lt;/svg&gt;&lt;div class=&quot;tag mono&quot; id=&quot;tag&quot;&gt;&lt;/div&gt;&lt;div class=&quot;viewhelp mono&quot;&gt;DRAG TO ROTATE · SCROLL TO ZOOM&lt;br&gt;CLICK TO INSPECT · RIGHT DRAG TO PAN&lt;/div&gt;&lt;div id=&quot;error&quot; class=&quot;error&quot; hidden&gt;WebGL을 초기화하지 못했습니다.&lt;br&gt;브라우저의 하드웨어 가속 설정을 확인해 주세요.&lt;/div&gt;&lt;/div&gt;&lt;aside class=&quot;panel&quot;&gt;&lt;div class=&quot;section&quot;&gt;&lt;h2 class=&quot;sectiontitle mono&quot;&gt;MODULE INDEX / 05&lt;/h2&gt;&lt;div class=&quot;modulelist&quot; id=&quot;modules&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sectionnote&quot;&gt;모듈 선택 후 COMPONENTS에서 독립 관찰할 수 있습니다.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;section details&quot; id=&quot;details&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;&lt;div class=&quot;section&quot; id=&quot;wireSection&quot; hidden&gt;&lt;h2 class=&quot;sectiontitle mono&quot;&gt;WIRING / VISIBLE HARNESS&lt;/h2&gt;&lt;div class=&quot;wirelist&quot; id=&quot;wires&quot;&gt;&lt;/div&gt;&lt;p class=&quot;sectionnote&quot;&gt;배선의 피복 색과 기능은 별개입니다. 실제 단자·하부 경로 미확인 부분은 연결하지 않았습니다.&lt;/p&gt;&lt;/div&gt;&lt;/aside&gt;&lt;/div&gt;&lt;div class=&quot;controls&quot;&gt;&lt;div class=&quot;range&quot;&gt;&lt;label for=&quot;explode&quot; class=&quot;mono&quot;&gt;EXPLOSION DISTANCE&lt;/label&gt;&lt;input id=&quot;explode&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;0&quot; aria-label=&quot;분해 정도&quot;&gt;&lt;span id=&quot;pct&quot; class=&quot;pct mono&quot;&gt;0%&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;viewbuttons&quot; aria-label=&quot;카메라 시점&quot;&gt;&lt;button data-view=&quot;reset&quot;&gt;Reset View&lt;/button&gt;&lt;button data-view=&quot;top&quot;&gt;Top&lt;/button&gt;&lt;button data-view=&quot;bottom&quot;&gt;Bottom&lt;/button&gt;&lt;button data-view=&quot;side&quot;&gt;Side&lt;/button&gt;&lt;button data-view=&quot;iso&quot;&gt;Isometric&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;footer class=&quot;foot&quot;&gt;&lt;details&gt;&lt;summary&gt;모델 정확도 및 자료 출처 / Reference notes&lt;/summary&gt;&lt;p&gt;PCB 기준 치수: Teensy 4.1 60.96 × 17.78 mm, LOLIN D1 mini Pro 48 × 25.4 mm. 핀 피치 2.54 mm. 실물 사진 6장과 기존 포트폴리오 HTML 원본은 현재 작업 환경에서 직접 확인하지 못했습니다. 사용자 설명, 제공 Fritzing 회로도, 제조사 규격 및 GitHub 소스의 기능을 바탕으로 한 외형 복원용 추정 모델이며, 커넥터 실장 방향·높이·정확한 배선·SMD 위치·하부 납땜은 미검증입니다. 제작용 CAD/회로도가 아닙니다. 어댑터는 추가 Fritzing 도식의 10열 × 8행 격자 및 4열 소켓, 두 저항과 색상별 점퍼를 반영했습니다. B/C/E 역할은 추정이며 소자 품번·실제 핀 순서 및 숨은 배선은 미확인입니다. 배선 모드는 물리 하네스와 기능 범주를 정적으로 표시합니다. 기본은 내장 WebGL 렌더러이며, WebGL이 없는 환경에서는 같은 3D 메시를 깊이 버퍼가 있는 소프트웨어 렌더러로 표시합니다. HTTP 호스팅 또는 ?engine=three에서는 CDN의 Three.js r128과 OrbitControls를 선택적으로 사용합니다. 외부 라이브러리 경로는 네트워크 제한으로 실행 검증하지 못했습니다.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.pjrc.com/store/teensy41.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;PJRC Teensy 4.1&lt;/a&gt; · &lt;a href=&quot;https://www.wemos.cc/en/latest/d1/d1_mini_pro.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;LOLIN D1 mini Pro&lt;/a&gt; · &lt;a href=&quot;https://github.com/AliveSophist/USB_Hijacker&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Project source&lt;/a&gt;&lt;/p&gt;&lt;/details&gt;&lt;span class=&quot;mono&quot;&gt;PHYSICAL MODEL ONLY · NO SIGNAL ANIMATION&lt;/span&gt;&lt;/footer&gt;&lt;/main&gt;&lt;script&gt;
+(()=&gt;{&#x27;use strict&#x27;;
+const root=document.getElementById(&#x27;uxh-root&#x27;),$=s=&gt;root.querySelector(s),$$=s=&gt;[...root.querySelectorAll(s)];if(new URLSearchParams(location.search).get(&#x27;transparent&#x27;)===&#x27;1&#x27;)document.body.classList.add(&#x27;transparent&#x27;);
+const V=(x=0,y=0,z=0)=&gt;[x,y,z],add=(a,b)=&gt;a.map((v,i)=&gt;v+b[i]),sub=(a,b)=&gt;a.map((v,i)=&gt;v-b[i]),mul=(a,n)=&gt;a.map(v=&gt;v*n),dot=(a,b)=&gt;a.reduce((s,v,i)=&gt;s+v*b[i],0),cross=(a,b)=&gt;[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],norm=a=&gt;mul(a,1/(Math.hypot(...a)||1)),mix=(a,b,t)=&gt;a.map((v,i)=&gt;v+(b[i]-v)*t),clamp=(v,a,b)=&gt;Math.max(a,Math.min(b,v)),ease=t=&gt;{t=clamp(t,0,1);return t*t*(3-2*t)},PI=Math.PI;
+const palette={pcb:&#x27;#256947&#x27;,pcb2:&#x27;#2b7651&#x27;,edge:&#x27;#a69c62&#x27;,gold:&#x27;#c7a34e&#x27;,solder:&#x27;#b3c1c0&#x27;,silver:&#x27;#aebec4&#x27;,darkmetal:&#x27;#687a82&#x27;,black:&#x27;#21262b&#x27;,ic:&#x27;#30363b&#x27;,plastic:&#x27;#161c20&#x27;,white:&#x27;#d9ded1&#x27;,ink:&#x27;#c6d5bd&#x27;,tan:&#x27;#b59664&#x27;,cream:&#x27;#e0cba5&#x27;,red:&#x27;#d34745&#x27;,blue:&#x27;#377cc5&#x27;,cyan:&#x27;#41b5ad&#x27;,orange:&#x27;#bc6636&#x27;,grey:&#x27;#7b8c91&#x27;,dark:&#x27;#0b1317&#x27;};
+const meta=[{name:&#x27;Teensy 4.1&#x27;,type:&#x27;MAIN CONTROLLER&#x27;,size:&#x27;60.96 × 17.78 mm&#x27;,role:&#x27;메인 MCU 보드. USB 호스트 및 장치 인터페이스와 microSD 저장장치를 포함합니다.&#x27;,physical:&#x27;녹색 PCB, i.MX RT1062, microSD 슬롯, Micro USB, 양측 24핀 헤더.&#x27;,connection:&#x27;외부 호스트 커넥터 하네스는 PJRC Teensy 4.1 USB Host 패드 카드(+5V, D−, D+, GND) 위치를 기준으로 맞췄습니다. 나머지 결합 위치는 일부 추정입니다.&#x27;,status:&#x27;공식 규격 · 배치 추정&#x27;}, {name:&#x27;LOLIN D1 mini Pro&#x27;,type:&#x27;WI-FI DEVELOPMENT BOARD&#x27;,size:&#x27;48 × 25.4 mm&#x27;,role:&#x27;ESP8266 기반 Wi-Fi 웹 인터페이스 보드.&#x27;,physical:&#x27;녹색 PCB, PCB 안테나, 외장 안테나 커넥터, 노출 IC, Micro USB, 양측 8핀.&#x27;,connection:&#x27;어댑터를 통한 보드 간 연결. 정확한 실장 높이와 위치 미확인.&#x27;,status:&#x27;공식 규격 · 배치 추정&#x27;}, {name:&#x27;USB Host Breakout&#x27;,type:&#x27;EXTERNAL CONNECTOR&#x27;,size:&#x27;약 20 × 16 mm (추정)&#x27;,role:&#x27;외부 USB-A Female 물리 인터페이스.&#x27;,physical:&#x27;금속 커넥터, 내부 절연체와 접점, 녹색 PCB 및 4색 케이블.&#x27;,connection:&#x27;4선 하네스를 Teensy 4.1의 Micro USB 근처 흰색 테두리의 5홀 영역으로 연장했습니다. 브레이크아웃 보드의 홀 순서는 사진 기준 GND·D+·D−·VBUS로 맞췄고, Teensy 쪽은 PJRC 카드의 +5V·D−·D+·GND 순서를 참조했습니다. 배선은 메인보드 하부의 양쪽 핀 헤더 사이를 통과하며, 실제 전기 연결은 확정하지 않습니다.&#x27;,status:&#x27;사용자 설명 · PJRC 핀카드 기준 배치&#x27;}, {name:&#x27;Custom Adapter&#x27;,type:&#x27;BOARD-TO-BOARD ADAPTER&#x27;,size:&#x27;약 23.4 × 28 mm (회로도 피치 환산)&#x27;,role:&#x27;두 개발보드를 연결하는 사용자 제작 확장기판. 제공된 Fritzing 도식의 소켓과 소자 배치를 반영합니다.&#x27;,physical:&#x27;녹색 만능기판, 관통 홀과 납땜 패드, 암 헤더, 저항 2개, 3단자 소자.&#x27;,connection:&#x27;2.54 mm 격자와 도식에 보이는 점퍼·저항·3단자 리드 배치를 표현. 실제 후면 납땜과 B/C/E 핀 배열은 미확인.&#x27;,status:&#x27;Fritzing 배치 반영 · 실장 높이 및 B/C/E 추정&#x27;}, {name:&#x27;Piezo Buzzer&#x27;,type:&#x27;ACOUSTIC ASSEMBLY&#x27;,size:&#x27;약 18 × 15 mm (추정)&#x27;,role:&#x27;소스 Buzzzzer.h의 멜로디·청각적 피드백용 부품. 소리 재생 없음.&#x27;,physical:&#x27;검은색 원통형 부저, 1kΩ 트리머, 3핀 암 소켓, 적·흑색 와이어.&#x27;,connection:&#x27;소스 PIN_BUZZER=A17(41). 인접 GND/41/40 위치에 맞춘 암 커넥터(40 미연결 예시). 1kΩ 트리머 직렬 음량 조절은 참고 회로이며 실제 결선 미확인.&#x27;,status:&#x27;소스 기능 확인 · 외형 추정&#x27;}];
+const modules=[],parts=[],wireInfo=[{id:&#x27;wBlue&#x27;,name:&#x27;USB 하네스 · 파란색 (D− 추정)&#x27;,color:palette.blue,desc:&#x27;USB Host Breakout에서 Teensy 4.1의 USB Host D− 패드로 향하도록 연장한 하네스입니다. 색상은 시각 구분용이며 실제 제작 시 사용자 배선을 다시 확인해야 합니다.&#x27;},{id:&#x27;wRed&#x27;,name:&#x27;USB 하네스 · +5V (빨간색)&#x27;,color:palette.red,desc:&#x27;USB Host Breakout에서 Teensy 4.1의 USB Host +5V 패드로 향하도록 연장한 하네스입니다.&#x27;},{id:&#x27;wCyan&#x27;,name:&#x27;USB 하네스 · 청록색 (D+ 추정)&#x27;,color:palette.cyan,desc:&#x27;USB Host Breakout에서 Teensy 4.1의 USB Host D+ 패드로 향하도록 연장한 하네스입니다. 색상은 외형 구분용이며 실제 연결은 미확인입니다.&#x27;},{id:&#x27;wBlack&#x27;,name:&#x27;USB 하네스 · GND (검은색)&#x27;,color:palette.black,desc:&#x27;USB Host Breakout에서 Teensy 4.1의 USB Host GND 패드로 향하도록 연장한 하네스입니다. 5홀 영역 근처에 배치한 시각적 모델이며 실제 연결은 미확인입니다.&#x27;},{id:&#x27;piezoRed&#x27;,name:&#x27;부저 하네스 · 적색&#x27;,color:palette.red,desc:&#x27;A17(41)에서 트리머로 향하는 참고 배선. 실제 결선 미확인.&#x27;},{id:&#x27;piezoVolume&#x27;,name:&#x27;부저 · 음량 조절 연결선&#x27;,color:palette.red,desc:&#x27;트리머 와이퍼와 피에조 사이의 직렬 연결 참고 모델. 실제 단자 배치 미확인.&#x27;},{id:&#x27;piezoBlack&#x27;,name:&#x27;부저 하네스 · 흑색&#x27;,color:palette.black,desc:&#x27;부저에서 인접 GND로 향하는 참고 배선. 실제 결선 미확인.&#x27;},{id:&#x27;adBase&#x27;,name:&#x27;Adapter · B (추정)&#x27;,color:palette.cyan,desc:&#x27;도식의 왼쪽 리드와 청록색 점퍼. B(Base) 역할은 회로 형태상 추정이며 실제 트랜지스터 품번과 핀 배열 확인이 필요합니다.&#x27;},{id:&#x27;adCollector&#x27;,name:&#x27;Adapter · C (추정)&#x27;,color:palette.blue,desc:&#x27;도식의 가운데 리드와 파란색 점퍼. C(Collector)는 기능상 추정이며 소자 자체의 핀 배치는 미확인입니다.&#x27;},{id:&#x27;adEmitter&#x27;,name:&#x27;Adapter · E (추정)&#x27;,color:palette.black,desc:&#x27;도식의 오른쪽 리드와 검은색 세로 연결. E(Emitter)는 기능상 추정이며 소자 자체의 핀 배치는 미확인입니다.&#x27;},{id:&#x27;adGround&#x27;,name:&#x27;Adapter · 검은색 공통선&#x27;,color:palette.black,desc:&#x27;도식에 표시된 가로 검은색 연결. 실제 하부 납땜 경로는 재현하지 않았습니다.&#x27;},{id:&#x27;adOrange&#x27;,name:&#x27;Adapter · 주황 점퍼&#x27;,color:palette.orange,desc:&#x27;도식에 보이는 주황색 점퍼. 실제 하부 경로 미확인.&#x27;},{id:&#x27;adOchre&#x27;,name:&#x27;Adapter · 황갈색 점퍼&#x27;,color:&#x27;#a98a46&#x27;,desc:&#x27;도식에 보이는 황갈색 점퍼. 실제 하부 경로 미확인.&#x27;},{id:&#x27;adWhite&#x27;,name:&#x27;Adapter · 흰색 점퍼&#x27;,color:palette.white,desc:&#x27;도식에 보이는 흰색 점퍼. 실제 하부 경로 미확인.&#x27;},{id:&#x27;adGrey&#x27;,name:&#x27;Adapter · 회색 점퍼&#x27;,color:palette.grey,desc:&#x27;도식에 보이는 회색 점퍼. 실제 하부 경로 미확인.&#x27;},{id:&#x27;adRed&#x27;,name:&#x27;Adapter · 적색 점퍼&#x27;,color:palette.red,desc:&#x27;도식에 보이는 적색 점퍼. 색만으로 전기적 기능을 확정하지 않습니다.&#x27;},{id:&#x27;adR1&#x27;,name:&#x27;Adapter · R1&#x27;,color:palette.tan,desc:&#x27;도식의 첫 번째 축형 저항. 색띠는 시각 자료를 참고했으며 저항값은 미확인.&#x27;},{id:&#x27;adR2&#x27;,name:&#x27;Adapter · R2&#x27;,color:palette.tan,desc:&#x27;도식의 두 번째 축형 저항. 색띠는 시각 자료를 참고했으며 저항값은 미확인.&#x27;},{id:&#x27;sockets&#x27;,name:&#x27;보드 간 커넥터 / 결합부&#x27;,color:palette.gold,desc:&#x27;Fritzing의 보드 간 접속 관계를 물리 소켓으로 표현했습니다. 전원·공통 기준·MCU 간 인터페이스를 구분하는 실제 단자별 배선은 실물 확인이 필요합니다.&#x27;}];
+const subInfo={mcu:[&#x27;NXP i.MX RT1062&#x27;,&#x27;Teensy 4.1의 주 연산 IC. BGA 패키지 외형을 재현했습니다.&#x27;],sd:[&#x27;microSD 슬롯&#x27;,&#x27;메인보드 끝단의 카드 소켓. 실제 카드 삽입 여부는 미확인입니다.&#x27;],micro:[&#x27;Micro USB&#x27;,&#x27;개발보드에 내장된 Micro USB 커넥터. 별도 USB-A 확장 포트와 구분됩니다.&#x27;],headers:[&#x27;핀 헤더&#x27;,&#x27;2.54mm 피치의 금속 핀과 절연 하우징. 조립 높이는 추정입니다.&#x27;],esp:[&#x27;ESP8266EX&#x27;,&#x27;LOLIN D1 mini Pro의 무선 MCU. 실제 칩 방향과 주변 소자 위치는 근사입니다.&#x27;],antenna:[&#x27;PCB 안테나&#x27;,&#x27;보드 끝의 금색 지그재그 패턴. 패턴 외형은 참고용이며 RF 설계 치수가 아닙니다.&#x27;],external:[&#x27;외장 안테나 커넥터&#x27;,&#x27;소형 RF 커넥터의 금속 외형.&#x27;],host:[&#x27;USB Type-A Female&#x27;,&#x27;금속 셸, 절연체, 내부 접점을 가진 별도 확장 커넥터.&#x27;],sockets:[&#x27;암 핀 소켓&#x27;,&#x27;실제 삽입 공간을 가진 절연 하우징. 길이 및 높이는 추정입니다.&#x27;],resistors:[&#x27;원통형 저항&#x27;,&#x27;확장기판의 두 개 축형 저항. 저항값과 배선은 확정하지 않습니다.&#x27;],transistor:[&#x27;3단자 소자 / TO-92형&#x27;,&#x27;도식 기준 왼쪽·가운데·오른쪽 리드를 독립적으로 모델링했습니다. B·C·E 역할은 회로 형태상 추정이며 실제 품번과 핀 순서는 미확인입니다.&#x27;],buzzer:[&#x27;Piezo Buzzer&#x27;,&#x27;음향 방출 홀을 가진 원통형 하우징. 멜로디 출력과 청각 피드백.&#x27;],trimmer:[&#x27;1 kΩ Trimmer&#x27;,&#x27;십자 조절 홈을 가진 1kΩ 가변저항. 직렬 가변저항 방식으로 음량을 조절하는 참고 모델.&#x27;],socket3:[&#x27;3-pin Socket&#x27;,&#x27;부저 조립체의 3핀 암 소켓. 정확한 연결 단자는 미확인입니다.&#x27;],pcb:[&#x27;PCB / substrate&#x27;,&#x27;기판의 표면, 절단면, 관통 홀을 3D로 재현했습니다.&#x27;]};
+for(const w of wireInfo)if(w.id.startsWith(&#x27;ad&#x27;))subInfo[w.id]=[w.name,w.desc];
+function mod(id,assembly,offset){let m={id,meta:meta[id],assembly,offset,pos:[...assembly],items:[],rotation:[0,0,0],anchors:[], bounds:null};modules.push(m);return m}
+function item(m,id,color,metal=0){const key=id+&#x27;|&#x27;+color+&#x27;|&#x27;+metal;let p=m.items.find(a=&gt;a.key===key);if(!p){p={m,id,key,color:palette[color]||color,metal,v:[],n:[],faces:[],bounds:[V(Infinity,Infinity,Infinity),V(-Infinity,-Infinity,-Infinity)]};m.items.push(p);parts.push(p)}return p}
+function tri(p,a,b,c,record=true){if(record)p.faces.push([a,b,c]);let n=norm(cross(sub(b,a),sub(c,a)));for(let q of [a,b,c]){p.v.push(...q);p.n.push(...n);for(let i=0;i&lt;3;i++){p.bounds[0][i]=Math.min(p.bounds[0][i],q[i]);p.bounds[1][i]=Math.max(p.bounds[1][i],q[i])}}}
+function quad(p,a,b,c,d){p.faces.push([a,b,c,d]);tri(p,a,b,c,false);tri(p,a,c,d,false)}
+function box(p,x,y,z,w,h,d){let a=x-w/2,b=x+w/2,c=y-h/2,e=y+h/2,f=z-d/2,g=z+d/2;quad(p,V(a,e,f),V(a,e,g),V(b,e,g),V(b,e,f));quad(p,V(a,c,g),V(a,c,f),V(b,c,f),V(b,c,g));quad(p,V(a,c,f),V(a,e,f),V(b,e,f),V(b,c,f));quad(p,V(b,c,g),V(b,e,g),V(a,e,g),V(a,c,g));quad(p,V(a,c,g),V(a,e,g),V(a,e,f),V(a,c,f));quad(p,V(b,c,f),V(b,e,f),V(b,e,g),V(b,c,g))}
+function cyl(p,x,y,z,r,h,seg=20,inner=0){let lo=y-h/2,hi=y+h/2;for(let i=0;i&lt;seg;i++){let a=i*2*PI/seg,b=(i+1)*2*PI/seg;let at=(t,yy,rr)=&gt;V(x+rr*Math.cos(t),yy,z+rr*Math.sin(t));let al=at(a,lo,r),bl=at(b,lo,r),ah=at(a,hi,r),bh=at(b,hi,r);quad(p,al,ah,bh,bl);if(inner){let il=at(a,lo,inner),jl=at(b,lo,inner),ih=at(a,hi,inner),jh=at(b,hi,inner);quad(p,ah,ih,jh,bh);quad(p,bl,jl,il,al);quad(p,il,jl,jh,ih)}else{tri(p,V(x,hi,z),bh,ah);tri(p,V(x,lo,z),al,bl)}}}
+function tube(p,points,r,seg=10,steps=28){let samples=[];for(let i=0;i&lt;=steps;i++){let t=i/steps*(points.length-1),j=Math.min(points.length-2,Math.floor(t)),u=t-j;let a=points[Math.max(0,j-1)],b=points[j],c=points[j+1],d=points[Math.min(points.length-1,j+2)];samples.push(b.map((v,k)=&gt;.5*((2*v)+(-a[k]+c[k])*u+(2*a[k]-5*v+4*c[k]-d[k])*u*u+(-a[k]+3*v-3*c[k]+d[k])*u*u*u)))}let rings=samples.map((q,i)=&gt;{let t=norm(sub(samples[Math.min(i+1,steps)],samples[Math.max(0,i-1)])),up=Math.abs(dot(t,V(0,1,0)))&gt;.95?V(0,0,1):V(0,1,0),u=norm(cross(t,up)),v=norm(cross(t,u));return Array.from({length:seg},(_,j)=&gt;add(q,add(mul(u,r*Math.cos(j*2*PI/seg)),mul(v,r*Math.sin(j*2*PI/seg))))) });for(let i=0;i&lt;steps;i++)for(let j=0;j&lt;seg;j++){let k=(j+1)%seg;quad(p,rings[i][j],rings[i][k],rings[i+1][k],rings[i+1][j])}return p}
+function rod(p,a,b,r=.23){tube(p,[a,b],r,8,1)}
+// Board with drilled holes: split into rectangular cells and tessellate actual circular cut-outs.
+function board(m,w,d,holes,th=1.5){let p=item(m,&#x27;pcb&#x27;,&#x27;pcb&#x27;),e=item(m,&#x27;pcb&#x27;,&#x27;edge&#x27;);let xs=[-w/2,w/2],zs=[-d/2,d/2];for(const [x,z,r] of holes){xs.push(x-r-.09,x+r+.09);zs.push(z-r-.09,z+r+.09)}const unique=a=&gt;[...new Set(a.map(v=&gt;+v.toFixed(4)))].sort((a,b)=&gt;a-b);xs=unique(xs);zs=unique(zs);let Y=th/2;const surface=(x0,x1,z0,z1)=&gt;{quad(p,V(x0,Y,z0),V(x0,Y,z1),V(x1,Y,z1),V(x1,Y,z0));quad(p,V(x0,-Y,z1),V(x0,-Y,z0),V(x1,-Y,z0),V(x1,-Y,z1))};
+// Use full board grid clipped by hole polygon with a per-cell hole test; actual circular rims are separate annuli.
+// The rectangular holes are fully surrounded by drilled annular pads.
+for(let i=0;i&lt;xs.length-1;i++)for(let j=0;j&lt;zs.length-1;j++){let a=xs[i],b=xs[i+1],c=zs[j],f=zs[j+1],cx=(a+b)/2,cz=(c+f)/2;let hole=holes.find(q=&gt;Math.abs(cx-q[0])&lt;q[2]+.08&amp;&amp;Math.abs(cz-q[1])&lt;q[2]+.08);if(!hole){surface(a,b,c,f);continue}let [hx,hz,r]=hole; // grid subdivision may cut hole cells; omit the interior and reconstruct pad rings below.
+}
+quad(e,V(-w/2,-Y,-d/2),V(-w/2,Y,-d/2),V(w/2,Y,-d/2),V(w/2,-Y,-d/2));quad(e,V(w/2,-Y,d/2),V(w/2,Y,d/2),V(-w/2,Y,d/2),V(-w/2,-Y,d/2));quad(e,V(-w/2,-Y,d/2),V(-w/2,Y,d/2),V(-w/2,Y,-d/2),V(-w/2,-Y,-d/2));quad(e,V(w/2,-Y,-d/2),V(w/2,Y,-d/2),V(w/2,Y,d/2),V(w/2,-Y,d/2));for(const [x,z,r] of holes){let sq=r+.09;for(let k=0;k&lt;32;k++){let a=k*2*PI/32,b=(k+1)*2*PI/32;let pos=(t,y,outer)=&gt;{let c=Math.cos(t),s=Math.sin(t),rr=outer?sq/Math.max(Math.abs(c),Math.abs(s)):r;return V(x+c*rr,y,z+s*rr)};quad(p,pos(a,Y,true),pos(a,Y,false),pos(b,Y,false),pos(b,Y,true));quad(p,pos(b,-Y,true),pos(b,-Y,false),pos(a,-Y,false),pos(a,-Y,true));quad(e,pos(a,-Y,false),pos(b,-Y,false),pos(b,Y,false),pos(a,Y,false))}cyl(item(m,&#x27;pcb&#x27;,&#x27;solder&#x27;,.55),x,Y+.035,z,r+.32,.07,20,r);cyl(item(m,&#x27;pcb&#x27;,&#x27;solder&#x27;,.55),x,-Y-.035,z,r+.32,.07,20,r)}}
+function pin(m,x,z,len=7,id=&#x27;headers&#x27;){box(item(m,id,&#x27;black&#x27;),x,-1.75,z,2.45,1.8,2.45);box(item(m,id,&#x27;gold&#x27;,.65),x,-len/2+.05,z,.61,len+.2,.61);cyl(item(m,id,&#x27;solder&#x27;,.65),x,.85,z,.76,.18,12,.31);box(item(m,id,&#x27;gold&#x27;,.65),x,.98,z,.62,.55,.62)}
+function socket(m,x,z,h=6,y=.75,id=&#x27;sockets&#x27;){let p=item(m,id,&#x27;plastic&#x27;),q=item(m,id,&#x27;gold&#x27;,.4),cy=y+h/2;box(p,x-.87,cy,z,.7,h,2.48);box(p,x+.87,cy,z,.7,h,2.48);box(p,x,cy,z-.87,1.04,h,.7);box(p,x,cy,z+.87,1.04,h,.7);box(q,x-.48,y+h*.65,z,.12,h*.55,.8);box(q,x+.48,y+h*.65,z,.12,h*.55,.8);box(q,x,y-.5,z,.6,1,.6)}
+function chip(m,id,x,z,w,d,h=1,leads=0){box(item(m,id,&#x27;ic&#x27;),x,.75+h/2,z,w,h,d);box(item(m,id,&#x27;black&#x27;),x,.75+h+.035,z,w-.35,.07,d-.35);cyl(item(m,id,&#x27;grey&#x27;),x-w/2+.75,.75+h+.08,z-d/2+.75,.22,.05,12);if(leads){let p=item(m,id,&#x27;solder&#x27;,.6);for(let i=0;i&lt;leads;i++){let q=(i-(leads-1)/2)*Math.min(.65,(w-1)/leads);for(let sign of [-1,1]){box(p,x+q,.9,z+sign*(d/2+.35),.22,.22,.75);box(p,x+sign*(w/2+.35),.9,z+q,.75,.22,.22)}}}}
+function smd(m,x,z,w=1.5,d=.8,color=&#x27;cream&#x27;){let id=&#x27;smd&#x27;;box(item(m,id,color),x,1.05,z,w,.55,d);box(item(m,id,&#x27;solder&#x27;,.5),x-w/2+.15,1.04,z,.3,.6,d);box(item(m,id,&#x27;solder&#x27;,.5),x+w/2-.15,1.04,z,.3,.6,d)}
+function usb(m,id,x,z,w=6,d=7.6,h=2.5,dir=-1,y=.75){let p=item(m,id,&#x27;silver&#x27;,.7),i=item(m,id,&#x27;plastic&#x27;),g=item(m,id,&#x27;gold&#x27;,.6),xc=x;box(p,xc,y+h-.19,z,w,.38,d);box(p,xc,y+.17,z,w,.34,d);box(p,xc,y+h/2,z-d/2+.18,w,h,.36);box(p,xc,y+h/2,z+d/2-.18,w,h,.36);box(p,xc-dir*(w/2-.18),y+h/2,z,.36,h,d);box(i,xc+dir*.3,y+.8,z,w-1,.65,d-1.15);let n=id===&#x27;host&#x27;?4:5;for(let j=0;j&lt;n;j++)box(g,xc+dir*1.15,y+1.17,z+(j-(n-1)/2)*(d-2)/n,w*.57,.12,.48);for(let sign of [-1,1])box(item(m,id,&#x27;darkmetal&#x27;,.55),xc+.1,y+h+.045,z+sign*d*.26,w*.25,.08,d*.12)}
+// 5x7 vector silkscreen, flat triangles on PCB/component surfaces.
+const font={A:&#x27;01110 10001 10001 11111 10001 10001 10001&#x27;,B:&#x27;11110 10001 10001 11110 10001 10001 11110&#x27;,C:&#x27;01111 10000 10000 10000 10000 10000 01111&#x27;,D:&#x27;11110 10001 10001 10001 10001 10001 11110&#x27;,E:&#x27;11111 10000 10000 11110 10000 10000 11111&#x27;,F:&#x27;11111 10000 10000 11110 10000 10000 10000&#x27;,G:&#x27;01111 10000 10000 10111 10001 10001 01111&#x27;,H:&#x27;10001 10001 10001 11111 10001 10001 10001&#x27;,I:&#x27;111 010 010 010 010 010 111&#x27;,J:&#x27;00111 00010 00010 00010 10010 10010 01100&#x27;,K:&#x27;10001 10010 10100 11000 10100 10010 10001&#x27;,L:&#x27;10000 10000 10000 10000 10000 10000 11111&#x27;,M:&#x27;10001 11011 10101 10101 10001 10001 10001&#x27;,N:&#x27;10001 11001 10101 10011 10001 10001 10001&#x27;,O:&#x27;01110 10001 10001 10001 10001 10001 01110&#x27;,P:&#x27;11110 10001 10001 11110 10000 10000 10000&#x27;,Q:&#x27;01110 10001 10001 10001 10101 10010 01101&#x27;,R:&#x27;11110 10001 10001 11110 10100 10010 10001&#x27;,S:&#x27;01111 10000 10000 01110 00001 00001 11110&#x27;,T:&#x27;11111 00100 00100 00100 00100 00100 00100&#x27;,U:&#x27;10001 10001 10001 10001 10001 10001 01110&#x27;,V:&#x27;10001 10001 10001 10001 10001 01010 00100&#x27;,W:&#x27;10001 10001 10001 10101 10101 11011 10001&#x27;,X:&#x27;10001 10001 01010 00100 01010 10001 10001&#x27;,Y:&#x27;10001 10001 01010 00100 00100 00100 00100&#x27;,Z:&#x27;11111 00001 00010 00100 01000 10000 11111&#x27;,&#x27;0&#x27;:&#x27;01110 10011 10101 10101 11001 10001 01110&#x27;,&#x27;1&#x27;:&#x27;010 110 010 010 010 010 111&#x27;,&#x27;2&#x27;:&#x27;01110 10001 00001 00010 00100 01000 11111&#x27;,&#x27;3&#x27;:&#x27;11110 00001 00001 01110 00001 00001 11110&#x27;,&#x27;4&#x27;:&#x27;00010 00110 01010 10010 11111 00010 00010&#x27;,&#x27;5&#x27;:&#x27;11111 10000 10000 11110 00001 00001 11110&#x27;,&#x27;6&#x27;:&#x27;01110 10000 10000 11110 10001 10001 01110&#x27;,&#x27;7&#x27;:&#x27;11111 00001 00010 00100 01000 01000 01000&#x27;,&#x27;8&#x27;:&#x27;01110 10001 10001 01110 10001 10001 01110&#x27;,&#x27;9&#x27;:&#x27;01110 10001 10001 01111 00001 00001 01110&#x27;,&#x27;.&#x27;:&#x27;0 0 0 0 0 1 1&#x27;,&#x27;-&#x27;:&#x27;000 000 000 111 000 000 000&#x27;,&#x27; &#x27;:&#x27;0 0 0 0 0 0 0&#x27;};
+function silk(m,id,str,x,z,y=.79,size=.18,color=&#x27;ink&#x27;){let p=item(m,id,color),cursor=x;for(let ch of str.toUpperCase()){let pat=(font[ch]||font[&#x27; &#x27;]).split(&#x27; &#x27;);for(let i=0;i&lt;7;i++)for(let j=0;j&lt;pat[i].length;j++)if(pat[i][j]===&#x27;1&#x27;){let a=cursor+j*size,b=z+i*size;quad(p,V(a,y,b),V(a,y,b+size*.9),V(a+size*.9,y,b+size*.9),V(a+size*.9,y,b))}cursor+=(pat[0].length+1)*size}}
+const teensy=mod(0,V(0,0,0),V(0,0,0));
+// PJRC pin-card photo: millimetre coordinates approximated from the 2.54 mm edge pitch.
+const usbHostX=-22.86, usbHostZ=4.65, usbHostPitch=2.54;
+const th=[];
+for(let i=0;i&lt;24;i++)for(let sign of [-1,1])th.push([-29.21+i*2.54,sign*7.62,.47]);
+// USB host: separate single row of five. Nearby 2x3 pads use approximately 2 mm pitch.
+for(let i=0;i&lt;5;i++)th.push([usbHostX+i*usbHostPitch,usbHostZ,.43]);
+for(let x of [-16.15,-14.15])for(let z of [-5.15,-3.15,-1.15])th.push([x,z,.40]);
+// Special pins next to SD socket; isolated inner pad beside Micro USB.
+for(let i=0;i&lt;5;i++)th.push([16.51,(-2+i)*2.54,.44]);
+th.push([-26.67,-5.08,.43]);
+board(teensy,60.96,17.78,th);
+function padOutline(x0,x1,z0,z1,id){let p=item(teensy,id,&#x27;ink&#x27;);for(let z of [z0,z1])box(p,(x0+x1)/2,.79,z,x1-x0,.06,.13);for(let x of [x0,x1])box(p,x,.79,(z0+z1)/2,.13,.06,z1-z0);}
+padOutline(usbHostX-1.12,usbHostX+4*usbHostPitch+1.12,usbHostZ-1.08,usbHostZ+1.08,&#x27;usbHostPads&#x27;);
+padOutline(-17.15,-13.15,-6.15,-.15,&#x27;pcb&#x27;);
+for(let i=0;i&lt;24;i++)for(let s of [-1,1])pin(teensy,-29.21+i*2.54,s*7.62,7.2);chip(teensy,&#x27;mcu&#x27;,0,0,12.6,12.6,1.3);silk(teensy,&#x27;mcu&#x27;,&#x27;NXP&#x27;,-4.6,-3.8,2.13,.36,&#x27;grey&#x27;);silk(teensy,&#x27;mcu&#x27;,&#x27;RT1062&#x27;,-5.2,.2,2.13,.27,&#x27;grey&#x27;);usb(teensy,&#x27;micro&#x27;,-28.5,0,5.8,7.7,2.35,-1);let sd=item(teensy,&#x27;sd&#x27;,&#x27;silver&#x27;,.7);box(sd,24,2,0,12.2,.5,12.1);box(sd,24,1.3,-5.85,12.2,1.1,.4);box(sd,24,1.3,5.85,12.2,1.1,.4);box(sd,18.1,1.3,0,.4,1.1,12);box(item(teensy,&#x27;sd&#x27;,&#x27;black&#x27;),24,1.08,0,11.9,.45,11.4);for(let i=0;i&lt;8;i++)box(item(teensy,&#x27;sd&#x27;,&#x27;gold&#x27;,.5),20,1.37,-3.9+i*1.05,2,.12,.4);for(let i=0;i&lt;5;i++)box(item(teensy,&#x27;sd&#x27;,&#x27;darkmetal&#x27;,.4),26+i*.65,2.28,-4.7,.32,.05,2.5);chip(teensy,&#x27;smd&#x27;,-10.65,-3.15,3.5,3.5,.85,6);chip(teensy,&#x27;smd&#x27;,12,3.5,4.3,4.3,.85,5);chip(teensy,&#x27;smd&#x27;,-21.3,-3.0,3.2,3.2,.7,4);box(item(teensy,&#x27;smd&#x27;,&#x27;silver&#x27;,.6),10, -0.0+1.13,-3.5,4.8,.75,2.3);box(item(teensy,&#x27;button&#x27;,&#x27;silver&#x27;,.6),12.5,1.1,-.1,3.6,.65,3.4);cyl(item(teensy,&#x27;button&#x27;,&#x27;cream&#x27;),12.5,1.65,-.1,1.03,.55,20);for(let i=0;i&lt;5;i++)smd(teensy,-23+i*2.55,1.65,1.0,.65,i%3?&#x27;cream&#x27;:&#x27;black&#x27;);for(let i=0;i&lt;6;i++)smd(teensy,7.7+i*1.1,5.75,.75,.56,i%2?&#x27;tan&#x27;:&#x27;black&#x27;);smd(teensy,-10.1,4.7,1.2,2.3,&#x27;tan&#x27;);silk(teensy,&#x27;pcb&#x27;,&#x27;PJRC&#x27;,10,-5.6,.79,.16);for(let i=0;i&lt;10;i++){box(item(teensy,&#x27;pcb&#x27;,&#x27;gold&#x27;,.45),-5+i*1.15,-.79,2.9,.7,.08,1.25);box(item(teensy,&#x27;pcb&#x27;,&#x27;gold&#x27;,.45),-5+i*1.15,-.79,-2.9,.7,.08,1.25)}
+const esp=mod(1,V(-19.05,9.7,-1.27),V(-15,24,11));let eh=[];for(let i=0;i&lt;8;i++)for(let s of [-1,1])eh.push([-10.16+i*2.54,s*11.43,.48]);for(let x of [-20.5,20.5])for(let z of [-9.5,9.5])eh.push([x,z,1.1]);board(esp,48,25.4,eh);for(let i=0;i&lt;8;i++)for(let s of [-1,1])pin(esp,-10.16+i*2.54,s*11.43,8);usb(esp,&#x27;micro&#x27;,-22.5,0,5.9,7.8,2.4,-1);chip(esp,&#x27;esp&#x27;,5,0,7,7,1.05,8);silk(esp,&#x27;esp&#x27;,&#x27;ESP&#x27;,2.8,-1.8,1.88,.22,&#x27;grey&#x27;);silk(esp,&#x27;esp&#x27;,&#x27;8266&#x27;,2.6,.4,1.88,.19,&#x27;grey&#x27;);chip(esp,&#x27;smd&#x27;,-4,2.5,5,4.6,.9,4);chip(esp,&#x27;smd&#x27;,-13,-2,4.2,4.2,.9,6);box(item(esp,&#x27;smd&#x27;,&#x27;silver&#x27;,.65),8,1.2,-5.5,3.4,.9,2.5);box(item(esp,&#x27;connector&#x27;,&#x27;white&#x27;),-16,2.1,7.6,5.4,2.7,3.5);box(item(esp,&#x27;connector&#x27;,&#x27;dark&#x27;),-16,2.2,8.8,3.8,1.5,1.5);for(let i=0;i&lt;4;i++)box(item(esp,&#x27;connector&#x27;,&#x27;gold&#x27;,.5),-17.4+i*.9,2.1,8.5,.28,.35,1.1);let ant=item(esp,&#x27;antenna&#x27;,&#x27;gold&#x27;,.55);let path=[V(12,.82,-7),V(21,.82,-7),V(21,.82,-3),V(15,.82,-3),V(15,.82,0),V(21,.82,0),V(21,.82,3),V(15,.82,3),V(15,.82,6.5),V(22,.82,6.5)];for(let i=1;i&lt;path.length;i++){let a=path[i-1],b=path[i];box(ant,(a[0]+b[0])/2,.81,(a[2]+b[2])/2,Math.abs(b[0]-a[0])+.44,.09,Math.abs(b[2]-a[2])+.44)}cyl(item(esp,&#x27;external&#x27;,&#x27;silver&#x27;,.8),12,1.25,7.8,1.55,.95,22,.78);cyl(item(esp,&#x27;external&#x27;,&#x27;gold&#x27;,.65),12,1.25,7.8,.35,.95,16);for(let i=0;i&lt;12;i++){smd(esp,-15+i*1.9,-6.6,1.05,.75,i%3?&#x27;cream&#x27;:&#x27;black&#x27;);if(i&lt;8)smd(esp,-12+i*2,5.5,1.1,.75,i%2?&#x27;black&#x27;:&#x27;cream&#x27;)}silk(esp,&#x27;pcb&#x27;,&#x27;LOLIN&#x27;,-19,-8.6,.79,.23);silk(esp,&#x27;pcb&#x27;,&#x27;D1 MINI PRO&#x27;,-18,3.2,.79,.17);silk(esp,&#x27;pcb&#x27;,&#x27;V2.0.0&#x27;,-18,4.8,.79,.16);for(let i=0;i&lt;8;i++){silk(esp,&#x27;pcb&#x27;,String(i),-10.5+i*2.54,-8.8,.79,.10)}
+const host=mod(2,V(40.8,1,0),V(22,-6,-10));let hh=[[-7,-6,1.1],[-7,6,1.1],[7,-6,1.1],[7,6,1.1]];for(let i=0;i&lt;4;i++)hh.push([-7,-3.81+i*2.54,.44]);board(host,20,16,hh);usb(host,&#x27;host&#x27;,2.1,0,15.4,13.1,5.8,1);for(let s of [-1,1])box(item(host,&#x27;host&#x27;,&#x27;darkmetal&#x27;,.65),1,6.62,s*3.5,3.3,.1,1.6);// USB-A breakout pad order follows the reference photo silk: GND, D+, D−, VBUS.
+// Teensy host pad order follows the PJRC card: +5V, D−, D+, GND, GND.
+// The fifth Teensy ground pad is left visually unused here.
+let hostHarness=[
+{id:&#x27;wBlack&#x27;,color:&#x27;black&#x27;,startZ:-3.81,label:&#x27;GND&#x27;,targetPad:3},
+{id:&#x27;wCyan&#x27;,color:&#x27;cyan&#x27;,startZ:-1.27,label:&#x27;D+ (추정)&#x27;,targetPad:2},
+{id:&#x27;wBlue&#x27;,color:&#x27;blue&#x27;,startZ:1.27,label:&#x27;D− (추정)&#x27;,targetPad:1},
+{id:&#x27;wRed&#x27;,color:&#x27;red&#x27;,startZ:3.81,label:&#x27;+5V&#x27;,targetPad:0}
+];
+// Visual-only bundle below Teensy, within the central channel between its edge headers.
+// All coordinates here are local to the breakout (assembly world offset 40.8,1,0).
+// No electrical termination or confirmed data-pin assignment is represented.
+for(let [i,h] of hostHarness.entries()){
+  const lane=-2.4+i*1.6, tx=usbHostX+h.targetPad*usbHostPitch-40.8;
+  const pts=[V(-7,-.98,h.startZ),V(-9,-1.45,h.startZ),V(-11.8,-3.35,lane),V(-19,-3.4,lane),V(-34,-3.4,lane),V(tx+7,-3.4,lane),V(tx+3,-3.4,lane),V(tx,-3.4,usbHostZ-1.15),V(tx,-2.9,usbHostZ)];
+  // Stagger the first two wires vertically while they exchange lateral order near the breakout.
+  if(i===0){pts[1][1]-=.85;pts[2][1]-=.85;}
+  tube(item(host,h.id,h.color),pts,.39,10,100);
+  cyl(item(host,h.id,&#x27;solder&#x27;,.55),-7,-.87,h.startZ,.68,.25,12);
+  // Four visible socket housings, under the board with a small non-contact gap.
+  box(item(host,&#x27;sockets&#x27;,&#x27;plastic&#x27;),tx,-2.96,usbHostZ,2.30,2.1,2.30);
+}
+silk(host,&#x27;pcb&#x27;,&#x27;USB&#x27;,-9,4.5,.79,.2);
+// Adapter revision: 10 columns x 8 rows in the supplied Fritzing image.
+// Coordinates follow the diagram: rows run antenna -&gt; USB, columns left -&gt; right.
+const adapter=mod(3,V(-19.05,-9.2,-1.27),V(-12,-25,-10));
+const grid=(r,c,y=.85)=&gt;V(7.62-r*2.54,y,-11.43+c*2.54);
+const ah=[];for(let r=0;r&lt;8;r++)for(let c=0;c&lt;10;c++){let q=grid(r,c);ah.push([q[0],q[2],.48])}board(adapter,23.4,28,ah);
+// Connector centers aligned with corresponding Teensy and ESP header pins.
+for(let r=0;r&lt;8;r++)for(let c of [0,2,8,9]){let [x,y,z]=grid(r,c);socket(adapter,x,z,(c===0||c===9)?13.5:6.45)}
+function adapterWire(id,color,r1,c1,r2,c2,lift=1.3){let a=grid(r1,c1),b=grid(r2,c2);let p=item(adapter,id,color);tube(p,[a,V(a[0],lift,a[2]),V(b[0],lift,b[2]),b],.30,8,16);for(let q of [a,b])cyl(item(adapter,id,&#x27;solder&#x27;,.55),q[0],.98,q[2],.66,.23,12)}
+// Visible diagonal jumpers; schematic routing, not a reconstruction of concealed solder paths.
+for(let [id,color,r1,r2] of [[&#x27;adOrange&#x27;,&#x27;orange&#x27;,3,1],[&#x27;adOchre&#x27;,&#x27;#a98a46&#x27;,4,2],[&#x27;adWhite&#x27;,&#x27;white&#x27;,5,3],[&#x27;adGrey&#x27;,&#x27;grey&#x27;,6,4],[&#x27;adRed&#x27;,&#x27;red&#x27;,7,5]])adapterWire(id,color,r1,0,r2,2,1.36);
+adapterWire(&#x27;adGround&#x27;,&#x27;black&#x27;,6,2,6,9,1.35);
+adapterWire(&#x27;adEmitter&#x27;,&#x27;black&#x27;,0,6,6,6,1.25);
+adapterWire(&#x27;adBase&#x27;,&#x27;cyan&#x27;,0,2,0,4,1.45);
+// Both axial resistors span the indicated holes, with distinct 3D leads and bands.
+for(let [j,id] of [[3,&#x27;adR1&#x27;],[4,&#x27;adR2&#x27;]]){let a=grid(j,2),b=grid(j,6),x=a[0],y=2.5,z=(a[2]+b[2])/2;let metal=item(adapter,id,&#x27;solder&#x27;,.6);rod(metal,a,V(x,y,a[2]),.24);rod(metal,V(x,y,a[2]),V(x,y,z-2.85),.24);rod(metal,b,V(x,y,b[2]),.24);rod(metal,V(x,y,b[2]),V(x,y,z+2.85),.24);tube(item(adapter,id,&#x27;tan&#x27;),[V(x,y,z-2.85),V(x,y,z+2.85)],1.0,16,1);for(let [off,c] of [[-1.75,&#x27;#65452c&#x27;],[-.85,&#x27;black&#x27;],[.25,&#x27;orange&#x27;],[1.75,&#x27;gold&#x27;]])tube(item(adapter,id,c,.12),[V(x,y,z+off-.16),V(x,y,z+off+.16)],1.045,16,1)}
+// TO-92-style flat-sided housing. Its exact part number and pin order are unverified.
+const tx=9.4,tz=1.27,ty=3.75,tp=item(adapter,&#x27;transistor&#x27;,&#x27;black&#x27;);
+let outline=[];for(let i=0;i&lt;=24;i++){let a=-Math.PI/2+Math.PI*i/24;outline.push([tx-2.15*Math.cos(a),tz+2.15*Math.sin(a)])}outline.push([tx+.85,tz+2.15],[tx+.85,tz-2.15]);
+for(let i=0;i&lt;outline.length;i++){let a=outline[i],b=outline[(i+1)%outline.length];let lo=2.1,hi=5.4;quad(tp,V(a[0],lo,a[1]),V(a[0],hi,a[1]),V(b[0],hi,b[1]),V(b[0],lo,b[1]));tri(tp,V(tx,hi,tz),V(b[0],hi,b[1]),V(a[0],hi,a[1]));tri(tp,V(tx,lo,tz),V(a[0],lo,a[1]),V(b[0],lo,b[1]))}
+for(let [c,id] of [[4,&#x27;adBase&#x27;],[5,&#x27;adCollector&#x27;],[6,&#x27;adEmitter&#x27;]]){let q=grid(0,c),z=tz+(c-5)*1.27;let lead=item(adapter,id,&#x27;solder&#x27;,.65);tube(lead,[V(tx,2.1,z),V(tx,1.65,z),V(q[0]+.5,1.2,q[2]),q],.22,8,10);cyl(lead,q[0],.98,q[2],.62,.22,12)}
+// The middle physical lead routes toward the outer header in the drawing; show its bent lead and blue wire.
+let cq=grid(0,5),rq=grid(0,0);tube(item(adapter,&#x27;adCollector&#x27;,&#x27;solder&#x27;,.6),[cq,V(10.8,1.8,cq[2]),V(11.1,1.8,rq[2])],.23,8,10);tube(item(adapter,&#x27;adCollector&#x27;,&#x27;blue&#x27;),[V(11.1,1.8,rq[2]),V(10.9,1.4,rq[2]),rq],.31,8,10);cyl(item(adapter,&#x27;adCollector&#x27;,&#x27;solder&#x27;,.55),rq[0],.98,rq[2],.62,.22,12);
+// Discreet reference marks: L/M/R are physical lead positions, not verified device pin numbering.
+silk(adapter,&#x27;transistor&#x27;,&#x27;L M R&#x27;,8.1,-.95,5.43,.11,&#x27;grey&#x27;);
+const piezo=mod(4,V(8.89,-4,-18.4),V(12,-12,-26));let buz=item(piezo,&#x27;buzzer&#x27;,&#x27;black&#x27;);cyl(buz,0,3.9,0,5.9,7.4,36);cyl(item(piezo,&#x27;buzzer&#x27;,&#x27;plastic&#x27;),0,7.65,0,5.85,.35,36,1.25);cyl(item(piezo,&#x27;buzzer&#x27;,&#x27;dark&#x27;),0,7.35,0,1.35,.2,20);cyl(item(piezo,&#x27;buzzer&#x27;,&#x27;grey&#x27;),0,.3,0,5.65,.4,32);for(let s of [-1,1])rod(item(piezo,&#x27;buzzer&#x27;,&#x27;solder&#x27;,.7),V(s*1.8,.1,0),V(s*1.8,-1.35,0),.34);box(item(piezo,&#x27;trimmer&#x27;,&#x27;white&#x27;),8,2.25,0,5.6,4.3,6.0);cyl(item(piezo,&#x27;trimmer&#x27;,&#x27;cream&#x27;),8,4.5,0,2.1,.45,24);box(item(piezo,&#x27;trimmer&#x27;,&#x27;grey&#x27;),8,4.76,0,3,.08,.45);box(item(piezo,&#x27;trimmer&#x27;,&#x27;grey&#x27;),8,4.77,0,.45,.09,3);silk(piezo,&#x27;trimmer&#x27;,&#x27;102&#x27;,5.5,-2.45,4.43,.12,&#x27;grey&#x27;);for(let i=0;i&lt;3;i++)rod(item(piezo,&#x27;trimmer&#x27;,&#x27;solder&#x27;,.55),V(6.5+i*1.5,.1,1.2),V(6.5+i*1.5,-1.1,1.2),.24);
+// Female 3-position plug, mating with Teensy edge GND / A17(41) / 40.
+// The third cavity is unconnected; this is a reference assembly, not verified hardware wiring.
+const plugZ=10.78, plugTop=1.15, plugBottom=-3.15, plugH=plugTop-plugBottom, plugY=(plugTop+plugBottom)/2;
+let shell=item(piezo,&#x27;socket3&#x27;,&#x27;plastic&#x27;), contact=item(piezo,&#x27;socket3&#x27;,&#x27;gold&#x27;,.45);
+for(let x of [-3.81,-1.27,1.27,3.81])box(shell,x,plugY,plugZ,.65,plugH,2.5);
+for(let z of [plugZ-1.05,plugZ+1.05])box(shell,0,plugY,z,7.62,plugH,.55);
+box(shell,0,plugBottom+.23,plugZ,7.62,.46,2.5);
+for(let x of [-2.54,0]){for(let dx of [-.47,.47])box(contact,x+dx,plugY+.3,plugZ,.14,2.8,.72);box(contact,x,plugBottom-.12,plugZ,.65,.35,.65)}
+// Reference series volume control: A17 -&gt; trimmer end -&gt; wiper -&gt; piezo -&gt; GND.
+// Third trimmer terminal is left unused in this example; no extra GPIO is asserted.
+tube(item(piezo,&#x27;piezoRed&#x27;,&#x27;red&#x27;),[V(0,plugBottom-.28,plugZ),V(1,-4,7),V(5,-3,4),V(6.5,-1.1,1.2)],.4,10,32);
+tube(item(piezo,&#x27;piezoVolume&#x27;,&#x27;red&#x27;),[V(8,-1.1,1.2),V(7,-2.2,-1),V(3,-2.8,-2),V(-1.8,-1.35,0)],.4,10,30);
+tube(item(piezo,&#x27;piezoBlack&#x27;,&#x27;black&#x27;),[V(1.8,-1.35,0),V(2,-2.7,4),V(-2.54,-4,7),V(-2.54,plugBottom-.28,plugZ)],.4,10,30);
+// Final bounds and centers for camera and interaction.
+for(let m of modules){let a=V(Infinity,Infinity,Infinity),b=V(-Infinity,-Infinity,-Infinity);for(let p of m.items)for(let i=0;i&lt;3;i++){a[i]=Math.min(a[i],p.bounds[0][i]);b[i]=Math.max(b[i],p.bounds[1][i])}m.bounds=[a,b];m.center=mix(a,b,.5)}
+const stage=$(&#x27;.stage&#x27;),canvas=document.createElement(&#x27;canvas&#x27;);stage.append(canvas);const gl=canvas.getContext(&#x27;webgl&#x27;,{alpha:true,antialias:true,premultipliedAlpha:false,preserveDrawingBuffer:true});const ctx=gl?null:canvas.getContext(&#x27;2d&#x27;,{alpha:true});if(!gl&amp;&amp;!ctx){$(&#x27;#error&#x27;).hidden=false;$(&#x27;#loading&#x27;).hidden=true;return}let rendererType=gl?&#x27;offline&#x27;:&#x27;software&#x27;,three=null;
+const vs=`attribute vec3 aPos;attribute vec3 aNormal;uniform vec3 uOffset,uTarget,uRight,uUp,uForward;uniform vec2 uScale;varying vec3 vNormal;varying vec3 vWorld;void main(){vec3 p=aPos+uOffset;vec3 q=p-uTarget;gl_Position=vec4(dot(q,uRight)*uScale.x,dot(q,uUp)*uScale.y,dot(q,uForward)*.004,1.);vNormal=aNormal;vWorld=p;}`;
+const fs=`precision mediump float;uniform vec3 uColor,uView;uniform float uMetal,uAlpha,uHighlight;varying vec3 vNormal;varying vec3 vWorld;void main(){vec3 n=normalize(vNormal);vec3 l=normalize(vec3(-.35,.88,.62));vec3 f=normalize(vec3(.72,.45,-.48));float a=max(dot(n,l),0.);float b=max(dot(n,f),0.);float s=pow(max(dot(n,normalize(l+uView)),0.),mix(20.,64.,uMetal));float r=pow(1.-max(dot(n,uView),0.),3.);vec3 col=uColor*(.51+.51*a+.25*b)+vec3(.82,.93,1.)*(s*(.09+.33*uMetal)+r*.035*uMetal);col=mix(col,vec3(.45,.90,.72),uHighlight*.33);gl_FragColor=vec4(col,uAlpha);}`;
+function shader(type,code){let s=gl.createShader(type);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
+function program(v,f){let p=gl.createProgram();gl.attachShader(p,shader(gl.VERTEX_SHADER,v));gl.attachShader(p,shader(gl.FRAGMENT_SHADER,f));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));return p}
+let prog,attr,uni,lp,la,lu,lb;const rgb=h=&gt;{let n=parseInt(h.slice(1),16);return [((n&gt;&gt;16)&amp;255)/255,((n&gt;&gt;8)&amp;255)/255,(n&amp;255)/255]};if(gl){prog=program(vs,fs);attr=Object.fromEntries([&#x27;aPos&#x27;,&#x27;aNormal&#x27;].map(n=&gt;[n,gl.getAttribLocation(prog,n)])),uni=Object.fromEntries([&#x27;uOffset&#x27;,&#x27;uTarget&#x27;,&#x27;uRight&#x27;,&#x27;uUp&#x27;,&#x27;uForward&#x27;,&#x27;uScale&#x27;,&#x27;uColor&#x27;,&#x27;uView&#x27;,&#x27;uMetal&#x27;,&#x27;uAlpha&#x27;,&#x27;uHighlight&#x27;].map(n=&gt;[n,gl.getUniformLocation(prog,n)]));function buffer(a){let b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(a),gl.STATIC_DRAW);return b}for(let p of parts){p.pb=buffer(p.v);p.nb=buffer(p.n);p.count=p.v.length/3;p.rgb=rgb(p.color)}
+lp=program(`attribute vec3 aPos;uniform vec3 uTarget,uRight,uUp,uForward;uniform vec2 uScale;void main(){vec3 q=aPos-uTarget;gl_Position=vec4(dot(q,uRight)*uScale.x,dot(q,uUp)*uScale.y,dot(q,uForward)*.004,1.);}`,`precision mediump float;uniform vec4 uLine;void main(){gl_FragColor=uLine;}`);la=gl.getAttribLocation(lp,&#x27;aPos&#x27;);lu=Object.fromEntries([&#x27;uTarget&#x27;,&#x27;uRight&#x27;,&#x27;uUp&#x27;,&#x27;uForward&#x27;,&#x27;uScale&#x27;,&#x27;uLine&#x27;].map(n=&gt;[n,gl.getUniformLocation(lp,n)]));lb=gl.createBuffer();}
+const state={mode:&#x27;assembly&#x27;,selected:null,sub:null,wire:null,hover:null,explode:0,targetExplosion:0,angle:-.64,elev:.52,zoom:1,focus:V(-1,1,0),camGoal:null,auto:!matchMedia(&#x27;(prefers-reduced-motion: reduce)&#x27;).matches,start:0,visible:true,dirty:true,dragging:false};let W=1,H=1,DPR=1,aspect=1,frameHalf=39,last=0,frameId=0,intersecting=true;
+const modeNames={assembly:[&#x27;01 / ASSEMBLY&#x27;,&#x27;Assembled hardware&#x27;],exploded:[&#x27;02 / EXPLODED&#x27;,&#x27;Exploded assembly&#x27;],wiring:[&#x27;03 / WIRING&#x27;,&#x27;Visible cable harness&#x27;],components:[&#x27;04 / COMPONENTS&#x27;,&#x27;Component inspection&#x27;]};const moduleBtn=$(&#x27;#modules&#x27;),wireBtn=$(&#x27;#wires&#x27;);
+moduleBtn.innerHTML=meta.map((m,i)=&gt;`&lt;button class=&quot;module&quot; data-mod=&quot;${i}&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;number&quot;&gt;0${i+1}&lt;/span&gt;&lt;span&gt;${m.name}&lt;/span&gt;&lt;span class=&quot;arrow&quot;&gt;↗&lt;/span&gt;&lt;/button&gt;`).join(&#x27;&#x27;);wireBtn.innerHTML=wireInfo.map(w=&gt;`&lt;button data-wire=&quot;${w.id}&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;swatch&quot; style=&quot;background:${w.color}&quot;&gt;&lt;/span&gt;${w.name}&lt;/button&gt;`).join(&#x27;&#x27;);
+function updateUI(){let s=state;$$(&#x27;[data-mode]&#x27;).forEach(b=&gt;b.setAttribute(&#x27;aria-pressed&#x27;,b.dataset.mode===s.mode));$$(&#x27;[data-mod]&#x27;).forEach(b=&gt;b.setAttribute(&#x27;aria-pressed&#x27;,+b.dataset.mod===s.selected));$$(&#x27;[data-wire]&#x27;).forEach(b=&gt;b.setAttribute(&#x27;aria-pressed&#x27;,b.dataset.wire===s.wire));$(&#x27;#modeLabel&#x27;).textContent=modeNames[s.mode][0];$(&#x27;#sceneTitle&#x27;).textContent=modeNames[s.mode][1];$(&#x27;#wireSection&#x27;).hidden=s.mode!==&#x27;wiring&#x27;;$(&#x27;#explode&#x27;).disabled=s.mode===&#x27;components&#x27;||s.mode===&#x27;wiring&#x27;;$(&#x27;#sceneStatus&#x27;).textContent=s.auto?&#x27;AUTO INTRO&#x27;:&#x27;REFERENCE MODEL&#x27;;let d=$(&#x27;#details&#x27;);if(s.wire){let w=wireInfo.find(x=&gt;x.id===s.wire);d.innerHTML=`&lt;h2 class=&quot;sectiontitle mono&quot;&gt;WIRE INSPECTOR&lt;/h2&gt;&lt;h2&gt;${w.name}&lt;/h2&gt;&lt;span class=&quot;status&quot;&gt;${w.id.startsWith(&#x27;ad&#x27;)?&#x27;Fritzing 도식 기반 · 실물 미검증&#x27;:&#x27;물리 외형 추정&#x27;}&lt;/span&gt;&lt;p&gt;${w.desc}&lt;/p&gt;&lt;p&gt;색상 강조는 정적 시각화이며 전기적 연결 확정이 아닙니다.&lt;/p&gt;`}else if(s.selected!==null){let m=meta[s.selected],sub=s.sub&amp;&amp;subInfo[s.sub];d.innerHTML=`&lt;h2 class=&quot;sectiontitle mono&quot;&gt;MODULE 0${s.selected+1} / ${m.type}&lt;/h2&gt;&lt;h2&gt;${sub?sub[0]:m.name}&lt;/h2&gt;&lt;span class=&quot;status&quot;&gt;${m.status}&lt;/span&gt;&lt;p&gt;${sub?sub[1]:m.role}&lt;/p&gt;&lt;dl class=&quot;kv&quot;&gt;&lt;dt&gt;크기&lt;/dt&gt;&lt;dd&gt;${m.size}&lt;/dd&gt;&lt;dt&gt;구조&lt;/dt&gt;&lt;dd&gt;${m.physical}&lt;/dd&gt;&lt;dt&gt;연결&lt;/dt&gt;&lt;dd&gt;${m.connection}&lt;/dd&gt;&lt;/dl&gt;${s.selected===3?&#x27;&lt;div class=&quot;subbuttons&quot;&gt;&lt;button data-sub=&quot;transistor&quot;&gt;Transistor&lt;/button&gt;&lt;button data-sub=&quot;adBase&quot;&gt;B*&lt;/button&gt;&lt;button data-sub=&quot;adCollector&quot;&gt;C*&lt;/button&gt;&lt;button data-sub=&quot;adEmitter&quot;&gt;E*&lt;/button&gt;&lt;button data-sub=&quot;adR1&quot;&gt;R1&lt;/button&gt;&lt;button data-sub=&quot;adR2&quot;&gt;R2&lt;/button&gt;&lt;button data-sub=&quot;all&quot;&gt;All&lt;/button&gt;&lt;/div&gt;&lt;p class=&quot;sectionnote&quot;&gt;* B/C/E는 추정입니다. 실제 품번 및 데이터시트 확인 필요.&lt;/p&gt;&#x27;:s.selected===4?&#x27;&lt;div class=&quot;subbuttons&quot;&gt;&lt;button data-sub=&quot;buzzer&quot;&gt;Buzzer&lt;/button&gt;&lt;button data-sub=&quot;trimmer&quot;&gt;Trimmer&lt;/button&gt;&lt;button data-sub=&quot;socket3&quot;&gt;Socket&lt;/button&gt;&lt;button data-sub=&quot;all&quot;&gt;All&lt;/button&gt;&lt;/div&gt;&#x27;:&#x27;&#x27;}`}else d.innerHTML=`&lt;h2 class=&quot;sectiontitle mono&quot;&gt;INSPECTOR / READY&lt;/h2&gt;&lt;h2&gt;Explore the hardware.&lt;/h2&gt;&lt;p&gt;회전하거나 확대하고, 화면의 부품을 클릭해 구성 요소를 살펴보세요.&lt;/p&gt;&lt;p&gt;이 모델은 회로도 및 공식 치수 기반의 외형 재구성입니다. 실물 조립 배치와 세부 배선은 검증되지 않았습니다.&lt;/p&gt;`;state.dirty=true;wake()}
+function stopAuto(){if(state.auto){state.auto=false;state.targetExplosion=state.explode;state.mode=state.explode&gt;.01?&#x27;exploded&#x27;:&#x27;assembly&#x27;;updateUI()}}
+function fit(which=state.mode){let m=state.selected!==null?modules[state.selected]:modules[0];let focus=which===&#x27;components&#x27;?m.center:which===&#x27;exploded&#x27;?V(-4,0,3):V(-1,1,0);let z=which===&#x27;components&#x27;? (m.id===0?2.0:m.id===1?2.2:m.id===2?2.65:m.id===3?2.7:3.55):which===&#x27;exploded&#x27;?.74:1;state.camGoal={focus:[...focus],angle:state.angle,elev:state.elev,zoom:z};state.dirty=true;wake()}
+function setMode(mode){stopAuto();state.mode=mode;state.wire=null;state.sub=null;if(mode===&#x27;components&#x27;){if(state.selected===null)state.selected=0;state.targetExplosion=0}else if(mode===&#x27;exploded&#x27;){state.targetExplosion=1;state.selected=null}else{state.targetExplosion=0;state.selected=null}fit(mode);updateUI()}
+function selectMod(id,sub=null,fromClick=false){stopAuto();state.selected=id;state.sub=sub;state.wire=null;if(!fromClick||state.mode===&#x27;components&#x27;){state.mode=&#x27;components&#x27;;state.targetExplosion=0;fit(&#x27;components&#x27;)}else if(state.mode===&#x27;assembly&#x27;||state.mode===&#x27;exploded&#x27;){let m=modules[id];state.camGoal={focus:add(m.pos,m.center),angle:state.angle,elev:state.elev,zoom:Math.min(state.zoom*1.18,1.55)}}updateUI()}
+function selectWire(id){stopAuto();state.mode=&#x27;wiring&#x27;;state.targetExplosion=0;state.wire=id;state.selected=null;state.sub=null;let p=parts.find(x=&gt;x.id===id);if(p){let target=add(p.m.assembly,mix(...p.bounds,.5));state.camGoal={focus:target,angle:-.6,elev:.62,zoom:1.6}}updateUI()}
+function setView(v){stopAuto();let angles={top:[0,PI/2-.001],bottom:[0,-PI/2+.001],side:[-PI/2,0],iso:[-.64,.52],reset:[-.64,.52]};let [a,e]=angles[v];if(v===&#x27;reset&#x27;){state.selected=state.mode===&#x27;components&#x27;?state.selected:null;state.sub=null;state.wire=null;fit();updateUI()}let goal=state.camGoal||{focus:[...state.focus],zoom:state.zoom};state.camGoal={...goal,angle:a,elev:e};state.dirty=true;wake()}
+root.addEventListener(&#x27;click&#x27;,e=&gt;{let b=e.target.closest(&#x27;button&#x27;);if(!b)return;if(b.dataset.mode)setMode(b.dataset.mode);if(b.dataset.mod!==undefined)selectMod(+b.dataset.mod);if(b.dataset.wire)selectWire(b.dataset.wire);if(b.dataset.view)setView(b.dataset.view);if(b.dataset.sub){state.sub=b.dataset.sub===&#x27;all&#x27;?null:b.dataset.sub;updateUI()}});$(&#x27;#explode&#x27;).addEventListener(&#x27;input&#x27;,e=&gt;{stopAuto();state.mode=&#x27;exploded&#x27;;state.selected=null;state.wire=null;state.sub=null;state.targetExplosion=+e.target.value/100;if(state.targetExplosion&gt;.3&amp;&amp;state.zoom&gt;1)fit(&#x27;exploded&#x27;);updateUI()});
+function basis(){let view=norm(V(Math.sin(state.angle)*Math.cos(state.elev),Math.sin(state.elev),Math.cos(state.angle)*Math.cos(state.elev)));let right=norm(cross(V(0,1,0),view)),up=norm(cross(view,right));let half=frameHalf/state.zoom;return{view,right,up,forward:mul(view,-1),scale:[1/(half*aspect),1/half],half}}
+function project(p,b=basis()){let q=sub(p,state.focus);return [(dot(q,b.right)*b.scale[0]*.5+.5)*W,(.5-dot(q,b.up)*b.scale[1]*.5)*H]}
+function alpha(p){if(state.mode===&#x27;components&#x27;)return p.m.id===state.selected?1:0;if(state.mode===&#x27;wiring&#x27;){if(state.wire){if(p.id===state.wire)return 1;return .19}return wireInfo.some(w=&gt;w.id===p.id)?1:.45}return 1}
+function highlight(p){if(state.wire===p.id)return .85;if(state.selected===p.m.id&amp;&amp;(!state.sub||state.sub===p.id))return state.mode===&#x27;components&#x27;&amp;&amp;!state.sub?0:.65;if(state.hover&amp;&amp;state.hover.m===p.m&amp;&amp;state.hover.id===p.id)return .45;return 0}
+function offsets(){for(let m of modules){let e=state.explode; // separation starts along mating axis before lateral movement
+let first=ease(Math.min(1,e*2)),second=ease(Math.max(0,(e-.42)/.58));let x=m.offset[0]*second,z=m.offset[2]*second,y=m.offset[1]*first;if(m.id===2){x=m.offset[0]*first;y=m.offset[1]*second;z=m.offset[2]*second}if(m.id===4){z=m.offset[2]*first;x=m.offset[0]*second;y=m.offset[1]*second}m.pos=state.mode===&#x27;components&#x27;&amp;&amp;m.id===state.selected?V(0,0,0):add(m.assembly,V(x,y,z));}}
+function lineData(){let lines=[];function dash(a,b,len=1,gap=.8){let delta=sub(b,a),d=Math.hypot(...delta),u=norm(delta);for(let t=0;t&lt;d;t+=len+gap)lines.push(...add(a,mul(u,t)),...add(a,mul(u,Math.min(t+len,d))))}if(state.mode!==&#x27;components&#x27;&amp;&amp;state.explode&gt;.03){for(let m of modules)if(m.id!==0){dash(add(m.assembly,m.center),add(m.pos,m.center),1.1,1.1)}}return lines}
+function updateAxes(b){let svg=$(&#x27;#axes&#x27;);svg.innerHTML=[[&#x27;X&#x27;,V(1,0,0),&#x27;#d59480&#x27;],[&#x27;Y&#x27;,V(0,1,0),&#x27;#71e5b7&#x27;],[&#x27;Z&#x27;,V(0,0,1),&#x27;#85b5dc&#x27;]].map(([l,v,c])=&gt;{let x=30+dot(v,b.right)*20,y=30-dot(v,b.up)*20;return `&lt;line x1=&quot;30&quot; y1=&quot;30&quot; x2=&quot;${x}&quot; y2=&quot;${y}&quot; stroke=&quot;${c}&quot; stroke-width=&quot;1.4&quot;/&gt;&lt;text x=&quot;${x+(x&gt;=30?4:-7)}&quot; y=&quot;${y+(y&gt;=30?8:-3)}&quot; fill=&quot;${c}&quot; font-size=&quot;9&quot;&gt;${l}&lt;/text&gt;`}).join(&#x27;&#x27;)}
+function updateTag(b){let tag=$(&#x27;#tag&#x27;),p=state.hover,selected=state.selected;if(state.wire){p=parts.find(x=&gt;x.id===state.wire)}if(!p&amp;&amp;selected!==null){p=state.sub?modules[selected].items.find(x=&gt;x.id===state.sub):null}let m=p?.m||(selected!==null?modules[selected]:null);if(!m||state.auto||(state.mode===&#x27;components&#x27;&amp;&amp;!state.sub&amp;&amp;!state.hover)){tag.style.display=&#x27;none&#x27;;return}let point=p?mix(...p.bounds,.5):m.center;let xy=project(add(m.pos,point),b);let title=state.wire?wireInfo.find(w=&gt;w.id===state.wire)?.name:(p&amp;&amp;subInfo[p.id]?subInfo[p.id][0]:m.meta.name);tag.textContent=title;tag.style.left=clamp(xy[0],8,W-155)+&#x27;px&#x27;;tag.style.top=clamp(xy[1],45,H-35)+&#x27;px&#x27;;tag.style.display=&#x27;block&#x27;}
+function drawGL(b){gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.useProgram(prog);gl.uniform3fv(uni.uTarget,state.focus);gl.uniform3fv(uni.uRight,b.right);gl.uniform3fv(uni.uUp,b.up);gl.uniform3fv(uni.uForward,b.forward);gl.uniform2fv(uni.uScale,b.scale);gl.uniform3fv(uni.uView,b.view);gl.enableVertexAttribArray(attr.aPos);gl.enableVertexAttribArray(attr.aNormal);let visible=parts.filter(p=&gt;alpha(p)&gt;0);visible.sort((a,c)=&gt;{let aA=alpha(a),cA=alpha(c);if(aA===1&amp;&amp;cA!==1)return -1;if(cA===1&amp;&amp;aA!==1)return 1;return dot(add(a.m.pos,mix(...a.bounds,.5)),b.view)-dot(add(c.m.pos,mix(...c.bounds,.5)),b.view)});for(let p of visible){let a=alpha(p);gl.depthMask(a===1);gl.uniform3fv(uni.uOffset,p.m.pos);gl.uniform3fv(uni.uColor,p.rgb);gl.uniform1f(uni.uMetal,p.metal);gl.uniform1f(uni.uAlpha,a);gl.uniform1f(uni.uHighlight,highlight(p));gl.bindBuffer(gl.ARRAY_BUFFER,p.pb);gl.vertexAttribPointer(attr.aPos,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,p.nb);gl.vertexAttribPointer(attr.aNormal,3,gl.FLOAT,false,0,0);gl.drawArrays(gl.TRIANGLES,0,p.count)}gl.depthMask(true);let lines=lineData();if(lines.length){gl.useProgram(lp);gl.uniform3fv(lu.uTarget,state.focus);gl.uniform3fv(lu.uRight,b.right);gl.uniform3fv(lu.uUp,b.up);gl.uniform3fv(lu.uForward,b.forward);gl.uniform2fv(lu.uScale,b.scale);gl.uniform4fv(lu.uLine,[.44,.9,.72,.55]);gl.bindBuffer(gl.ARRAY_BUFFER,lb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(lines),gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(la);gl.vertexAttribPointer(la,3,gl.FLOAT,false,0,0);gl.drawArrays(gl.LINES,0,lines.length/3)}}
+
+if(!gl){for(let p of parts){p.rgb=rgb(p.color);p.faces=p.faces.map(v=&gt;{let n=norm(cross(sub(v[1],v[0]),sub(v[2],v[0])));let c=mul(v.reduce((s,q)=&gt;add(s,q),V()),1/v.length);return {v,n,c}})}}
+// Z-buffered triangle rasterizer: genuine 3D geometry even when WebGL is unavailable.
+let softBuffer=null,softDepth=null,softImage=null,softCanvas=document.createElement(&#x27;canvas&#x27;),softCtx=softCanvas.getContext(&#x27;2d&#x27;);
+function drawSoftware(b){let cw=Math.min(1200,Math.round(W)),ch=Math.max(1,Math.round(cw*H/W));if(softCanvas.width!==cw||softCanvas.height!==ch||!softBuffer){softCanvas.width=cw;softCanvas.height=ch;softImage=softCtx.createImageData(cw,ch);softBuffer=softImage.data;softDepth=new Float32Array(cw*ch)}softBuffer.fill(0);softDepth.fill(-1e9);let hw=cw/2,hh=ch/2,sx=b.scale[0]*hw,sy=b.scale[1]*hh;let l=norm(V(-.35,.88,.62)),f=norm(V(.72,.45,-.48)),hv=norm(add(l,b.view)),trans=[];
+function raster(a,b,c,color,opacity){let x0=a[0],y0=a[1],x1=b[0],y1=b[1],x2=c[0],y2=c[1],den=(y1-y2)*(x0-x2)+(x2-x1)*(y0-y2);if(Math.abs(den)&lt;.00001)return;let minx=Math.max(0,Math.ceil(Math.min(x0,x1,x2)-.5)),maxx=Math.min(cw-1,Math.floor(Math.max(x0,x1,x2)-.5)),miny=Math.max(0,Math.ceil(Math.min(y0,y1,y2)-.5)),maxy=Math.min(ch-1,Math.floor(Math.max(y0,y1,y2)-.5));let ax=(y1-y2)/den,bx=(y2-y0)/den,ay=(x2-x1)/den,by=(x0-x2)/den,za=a[2]-c[2],zb=b[2]-c[2];for(let y=miny;y&lt;=maxy;y++){let px=minx+.5-x2,py=y+.5-y2,u=ax*px+ay*py,v=bx*px+by*py,idx=y*cw+minx;for(let x=minx;x&lt;=maxx;x++,idx++,u+=ax,v+=bx){if(u&lt;-.00001||v&lt;-.00001||u+v&gt;1.00001)continue;let z=c[2]+u*za+v*zb;if(z&lt;softDepth[idx]-1e-5)continue;let k=idx*4;if(opacity===1){softDepth[idx]=z;softBuffer[k]=color[0];softBuffer[k+1]=color[1];softBuffer[k+2]=color[2];softBuffer[k+3]=255}else{let aa=softBuffer[k+3]/255,oa=opacity+aa*(1-opacity);for(let j=0;j&lt;3;j++)softBuffer[k+j]=(color[j]*opacity+softBuffer[k+j]*aa*(1-opacity))/oa;softBuffer[k+3]=oa*255}}}}
+function faceDraw(face){let [pts,color,a]=face;raster(pts[0],pts[1],pts[2],color,a);if(pts.length===4)raster(pts[0],pts[2],pts[3],color,a)}
+for(let p of parts){let a=alpha(p);if(!a)continue;let h=highlight(p),o=sub(p.m.pos,state.focus),ox=dot(o,b.right)*sx+hw,oy=hh-dot(o,b.up)*sy,oz=dot(o,b.view),cache=new Map();for(let face of p.faces){let n=face.n;if(dot(n,b.view)&lt;=.0001)continue;let key=n.map(x=&gt;x.toFixed(2)).join(&#x27;,&#x27;);let color=cache.get(key);if(!color){let ambient=.51+.51*Math.max(dot(n,l),0)+.25*Math.max(dot(n,f),0);let spec=Math.pow(Math.max(0,dot(n,hv)),20+44*p.metal)*(.09+.33*p.metal);color=p.rgb.map((v,i)=&gt;Math.round(255*clamp((v*ambient+spec*[.82,.93,1][i])*(1-h*.33)+[.45,.9,.72][i]*h*.33,0,1)));cache.set(key,color)}let pts=face.v.map(q=&gt;[ox+dot(q,b.right)*sx,oy-dot(q,b.up)*sy,oz+dot(q,b.view)]);let d=[pts,color,a,oz+dot(face.c,b.view)];if(a===1)faceDraw(d);else trans.push(d)}}trans.sort((a,b)=&gt;a[3]-b[3]);for(let face of trans)faceDraw(face);softCtx.putImageData(softImage,0,0);ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);ctx.imageSmoothingEnabled=true;ctx.drawImage(softCanvas,0,0,W,H);let lines=lineData();ctx.strokeStyle=&#x27;#71e5b7a0&#x27;;ctx.lineWidth=1;ctx.beginPath();for(let i=0;i&lt;lines.length;i+=6){ctx.moveTo(...project(lines.slice(i,i+3),b));ctx.lineTo(...project(lines.slice(i+3,i+6),b))}ctx.stroke()}
+
+function resize(){let r=stage.getBoundingClientRect();W=Math.max(1,r.width);H=Math.max(1,r.height);DPR=Math.min(devicePixelRatio||1,1.75);canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);aspect=W/H;frameHalf=Math.max(39,66/aspect);if(three)three.renderer.setSize(W,H,false);state.dirty=true;wake()}
+function pick(x,y){if(three)return pickThree(x,y);let b=basis(),q=add(state.focus,add(mul(b.right,(x/W*2-1)/b.scale[0]),mul(b.up,(1-y/H*2)/b.scale[1]))),origin=add(q,mul(b.view,200)),direction=b.forward;let best=null,tbest=Infinity;function aabb(p,o){let lo=0,hi=tbest;for(let i=0;i&lt;3;i++){if(Math.abs(direction[i])&lt;1e-8){if(o[i]&lt;p.bounds[0][i]||o[i]&gt;p.bounds[1][i])return false;continue}let a=(p.bounds[0][i]-o[i])/direction[i],b=(p.bounds[1][i]-o[i])/direction[i];if(a&gt;b)[a,b]=[b,a];lo=Math.max(lo,a);hi=Math.min(hi,b);if(lo&gt;hi)return false}return true}for(let p of parts){if(alpha(p)===0)continue;let o=sub(origin,p.m.pos);if(!aabb(p,o))continue;let v=p.v;for(let i=0;i&lt;v.length;i+=9){let a=v.slice(i,i+3),b=v.slice(i+3,i+6),c=v.slice(i+6,i+9),e1=sub(b,a),e2=sub(c,a),h=cross(direction,e2),det=dot(e1,h);if(Math.abs(det)&lt;1e-7)continue;let f=1/det,s=sub(o,a),u=f*dot(s,h);if(u&lt;0||u&gt;1)continue;let k=cross(s,e1),w=f*dot(direction,k);if(w&lt;0||u+w&gt;1)continue;let t=f*dot(e2,k);if(t&gt;0&amp;&amp;t&lt;tbest){tbest=t;best=p}}}return best}
+let pointers=new Map(),moved=false,down=null,hoverAt=0;const local=e=&gt;{let r=stage.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]};stage.addEventListener(&#x27;contextmenu&#x27;,e=&gt;e.preventDefault());stage.addEventListener(&#x27;pointerdown&#x27;,e=&gt;{stopAuto();state.camGoal=null;state.dragging=true;state.hover=null;stage.setPointerCapture(e.pointerId);let xy=local(e);pointers.set(e.pointerId,{xy,button:e.button});if(pointers.size===1){down=xy;moved=false}else moved=true;state.dirty=true;wake()});stage.addEventListener(&#x27;pointermove&#x27;,e=&gt;{let xy=local(e);if(pointers.has(e.pointerId)){let prev=pointers.get(e.pointerId),dx=xy[0]-prev.xy[0],dy=xy[1]-prev.xy[1];if(down&amp;&amp;Math.hypot(xy[0]-down[0],xy[1]-down[1])&gt;4)moved=true;if(!three||!three.controls){if(pointers.size&gt;1){let other=[...pointers].find(([id])=&gt;id!==e.pointerId)[1].xy;let before=Math.hypot(prev.xy[0]-other[0],prev.xy[1]-other[1]),after=Math.hypot(xy[0]-other[0],xy[1]-other[1]);state.zoom=clamp(state.zoom*after/Math.max(1,before),.35,7);let b=basis();state.focus=add(state.focus,add(mul(b.right,-dx*b.half/H),mul(b.up,dy*b.half/H)))}else if(prev.button===2||prev.button===1||e.shiftKey){let b=basis();state.focus=add(state.focus,add(mul(b.right,-dx*2*b.half/H),mul(b.up,dy*2*b.half/H)))}else{state.angle-=dx*.009;state.elev=clamp(state.elev+dy*.008,-PI/2+.002,PI/2-.002)}}pointers.set(e.pointerId,{...prev,xy});state.dirty=true;wake()}else if(e.pointerType===&#x27;mouse&#x27;&amp;&amp;performance.now()-hoverAt&gt;90&amp;&amp;!state.auto){hoverAt=performance.now();state.hover=pick(...xy);stage.style.cursor=state.hover?&#x27;pointer&#x27;:&#x27;grab&#x27;;state.dirty=true;wake()}});function release(e){let xy=local(e),click=pointers.size===1&amp;&amp;!moved&amp;&amp;e.button===0&amp;&amp;e.type===&#x27;pointerup&#x27;;pointers.delete(e.pointerId);if(!pointers.size)state.dragging=false;if(click){let p=pick(...xy);if(p){if(state.mode===&#x27;wiring&#x27;&amp;&amp;wireInfo.some(w=&gt;w.id===p.id))selectWire(p.id);else selectMod(p.m.id,p.id,true)}else{state.selected=state.mode===&#x27;components&#x27;?state.selected:null;state.sub=null;state.wire=null;updateUI()}}state.dirty=true;wake()}stage.addEventListener(&#x27;pointerup&#x27;,release);stage.addEventListener(&#x27;pointercancel&#x27;,release);stage.addEventListener(&#x27;pointerleave&#x27;,()=&gt;{if(!state.dragging){state.hover=null;state.dirty=true;wake()}});stage.addEventListener(&#x27;wheel&#x27;,e=&gt;{e.preventDefault();stopAuto();state.camGoal=null;if(!three||!three.controls)state.zoom=clamp(state.zoom*Math.exp(-e.deltaY*.0015),.35,7);state.dirty=true;wake()},{passive:false});stage.addEventListener(&#x27;keydown&#x27;,e=&gt;{if([&#x27;ArrowLeft&#x27;,&#x27;ArrowRight&#x27;,&#x27;ArrowUp&#x27;,&#x27;ArrowDown&#x27;,&#x27;+&#x27;,&#x27;-&#x27;,&#x27;Escape&#x27;].includes(e.key)){e.preventDefault();stopAuto();state.camGoal=null;if(e.key===&#x27;ArrowLeft&#x27;)state.angle-=.15;if(e.key===&#x27;ArrowRight&#x27;)state.angle+=.15;if(e.key===&#x27;ArrowUp&#x27;)state.elev=clamp(state.elev+.15,-1.56,1.56);if(e.key===&#x27;ArrowDown&#x27;)state.elev=clamp(state.elev-.15,-1.56,1.56);if(e.key===&#x27;+&#x27;)state.zoom=clamp(state.zoom*1.15,.35,7);if(e.key===&#x27;-&#x27;)state.zoom=clamp(state.zoom/1.15,.35,7);if(e.key===&#x27;Escape&#x27;)setView(&#x27;reset&#x27;);state.dirty=true;wake()}});
+// Optional pinned Three.js backend; the self-contained native WebGL backend is the offline default.
+function script(src){return new Promise((resolve,reject)=&gt;{let s=document.createElement(&#x27;script&#x27;);s.src=src;s.onload=resolve;s.onerror=reject;document.head.append(s)})}
+async function enableThree(){try{await script(&#x27;https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js&#x27;);await script(&#x27;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&#x27;);const T=window.THREE;if(!T||!T.OrbitControls)return;const r=new T.WebGLRenderer({alpha:true,antialias:true});r.setPixelRatio(DPR);r.setSize(W,H,false);r.setClearColor(0,0);r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.15;const scene=new T.Scene(),camera=new T.OrthographicCamera(-1,1,1,-1,.1,600),ray=new T.Raycaster(),groups=[];scene.add(new T.HemisphereLight(0xf0f8ff,0x67776e,1.3));let key=new T.DirectionalLight(0xfff8ed,1.8);key.position.set(-80,110,80);scene.add(key);let rim=new T.DirectionalLight(0xbce3f7,.8);rim.position.set(80,60,-70);scene.add(rim);for(let m of modules){let g=new T.Group();g.name=m.meta.name;scene.add(g);groups.push(g);for(let p of m.items){let geo=new T.BufferGeometry();geo.setAttribute(&#x27;position&#x27;,new T.Float32BufferAttribute(p.v,3));geo.setAttribute(&#x27;normal&#x27;,new T.Float32BufferAttribute(p.n,3));let mat=new T.MeshStandardMaterial({color:p.color,metalness:p.metal*.65,roughness:.68-p.metal*.23,side:T.DoubleSide});let mesh=new T.Mesh(geo,mat);mesh.userData.part=p;g.add(mesh);p.mesh=mesh}}let line=new T.LineSegments(new T.BufferGeometry(),new T.LineBasicMaterial({color:0x71e5b7,transparent:true,opacity:.55}));scene.add(line);let controls=new T.OrbitControls(camera,stage);controls.enableDamping=false;controls.enablePan=true;controls.enableZoom=true;controls.minZoom=.35;controls.maxZoom=7;controls.enableKeys=false;let obj={T,renderer:r,scene,camera,groups,ray,line,controls,sync:false};three=obj;canvas.style.display=&#x27;none&#x27;;stage.append(r.domElement);rendererType=&#x27;three&#x27;;$(&#x27;#engine&#x27;).textContent=&#x27;THREE.JS / WEBGL&#x27;;controls.addEventListener(&#x27;start&#x27;,()=&gt;{stopAuto();state.camGoal=null});controls.addEventListener(&#x27;change&#x27;,()=&gt;{if(obj.sync)return;let d=camera.position.clone().sub(controls.target);state.angle=Math.atan2(d.x,d.z);state.elev=Math.asin(clamp(d.y/d.length(),-1,1));state.zoom=camera.zoom;state.focus=controls.target.toArray();state.dirty=true;wake()});state.dirty=true;wake()}catch(e){$(&#x27;#engine&#x27;).textContent=gl?&#x27;WEBGL / LOCAL FALLBACK&#x27;:&#x27;SOFTWARE 3D / OFFLINE&#x27;}}
+function drawThree(b){let {T,renderer,scene,camera,groups,line,controls}=three;three.sync=true;camera.left=-frameHalf*aspect;camera.right=frameHalf*aspect;camera.top=frameHalf;camera.bottom=-frameHalf;camera.zoom=state.zoom;camera.position.set(...add(state.focus,mul(b.view,200)));camera.up.set(0,1,0);controls.target.set(...state.focus);camera.lookAt(...state.focus);camera.updateProjectionMatrix();controls.update();three.sync=false;for(let m of modules){groups[m.id].position.set(...m.pos);groups[m.id].visible=state.mode!==&#x27;components&#x27;||m.id===state.selected;for(let p of m.items){let a=alpha(p),mat=p.mesh.material;mat.transparent=a&lt;1;mat.depthWrite=a===1;mat.opacity=a;mat.emissive.setHex(0x71e5b7);mat.emissiveIntensity=highlight(p)*.22;p.mesh.visible=a&gt;0}}let data=lineData();line.geometry.dispose();line.geometry=new T.BufferGeometry();line.geometry.setAttribute(&#x27;position&#x27;,new T.Float32BufferAttribute(data,3));line.visible=data.length&gt;0;renderer.render(scene,camera)}
+function pickThree(x,y){let {T,ray,camera,groups}=three;ray.setFromCamera(new T.Vector2(x/W*2-1,1-y/H*2),camera);return ray.intersectObjects(groups.filter(g=&gt;g.visible),true).find(h=&gt;h.object.visible&amp;&amp;alpha(h.object.userData.part)&gt;0)?.object.userData.part||null}
+function render(){offsets();let b=basis();if(three)drawThree(b);else if(gl)drawGL(b);else drawSoftware(b);updateAxes(b);updateTag(b);state.dirty=false}
+function wake(){if(!frameId&amp;&amp;intersecting&amp;&amp;!document.hidden)frameId=requestAnimationFrame(tick)}
+function tick(now){frameId=0;if(!intersecting||document.hidden){last=0;return}let dt=last?Math.min(50,now-last):16;last=now;let moving=false;if(state.auto){if(!state.start)state.start=now;let t=(now-state.start)/1000;if(t&lt;10.5){let e=t&lt;1.35?0:t&lt;4.65?ease((t-1.35)/3.3):t&lt;6.3?1:1-ease((t-6.3)/3.55);state.explode=state.targetExplosion=e;state.angle=-.64+.42*ease(t/2)-.42*ease((t-6.5)/3.8);state.elev=.52+.13*ease(t/3)-.13*ease((t-6.5)/3.8);state.zoom=1-.28*e;state.focus=mix(V(-1,1,0),V(-4,0,3),e);$(&#x27;#sceneTitle&#x27;).textContent=e&gt;.03?&#x27;Exploded assembly&#x27;:&#x27;Assembled hardware&#x27;;$(&#x27;#sceneStatus&#x27;).textContent=&#x27;AUTO INTRO&#x27;;moving=true}else{state.auto=false;state.explode=state.targetExplosion=0;state.mode=&#x27;assembly&#x27;;state.angle=-.64;state.elev=.52;state.zoom=1;state.focus=V(-1,1,0);updateUI();moving=true}}else{let rate=1-Math.exp(-dt/115);if(Math.abs(state.explode-state.targetExplosion)&gt;.0008){state.explode+=(state.targetExplosion-state.explode)*rate;moving=true}else if(state.explode!==state.targetExplosion){state.explode=state.targetExplosion;moving=true}if(state.camGoal){let g=state.camGoal,a=1-Math.exp(-dt/140),da=Math.atan2(Math.sin(g.angle-state.angle),Math.cos(g.angle-state.angle));state.angle+=da*a;state.elev+=(g.elev-state.elev)*a;state.zoom+=(g.zoom-state.zoom)*a;state.focus=mix(state.focus,g.focus,a);moving=true;if(Math.abs(da)+Math.abs(state.elev-g.elev)+Math.abs(state.zoom-g.zoom)+Math.hypot(...sub(state.focus,g.focus))&lt;.01){state.angle=g.angle;state.elev=g.elev;state.zoom=g.zoom;state.focus=[...g.focus];state.camGoal=null}}}if(moving||state.dirty){let percent=Math.round(state.explode*100);$(&#x27;#explode&#x27;).value=percent;$(&#x27;#pct&#x27;).textContent=percent+&#x27;%&#x27;;render()}if(state.auto||moving||state.dirty)wake();else last=0}
+const ro=new ResizeObserver(resize);ro.observe(stage);const io=new IntersectionObserver(entries=&gt;{intersecting=entries[0].isIntersecting;if(intersecting){if(state.auto&amp;&amp;state.start)state.start+=performance.now()-(state.pausedAt||performance.now());state.dirty=true;wake()}else{state.pausedAt=performance.now();if(frameId){cancelAnimationFrame(frameId);frameId=0}last=0}},{threshold:.02});io.observe(stage);document.addEventListener(&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden){state.hiddenAt=performance.now();if(frameId)cancelAnimationFrame(frameId);frameId=0;last=0}else{if(state.auto&amp;&amp;state.start&amp;&amp;state.hiddenAt)state.start+=performance.now()-state.hiddenAt;state.dirty=true;wake()}});canvas.addEventListener(&#x27;webglcontextlost&#x27;,e=&gt;{e.preventDefault();$(&#x27;#error&#x27;).hidden=false});canvas.addEventListener(&#x27;webglcontextrestored&#x27;,()=&gt;location.reload());
+// Avoid forcing external network access for file:// use; explicit opt-in or hosted page uses pinned CDN.
+$(&#x27;#engine&#x27;).textContent=gl?&#x27;WEBGL / OFFLINE READY&#x27;:&#x27;SOFTWARE 3D / OFFLINE&#x27;;$(&#x27;#loading&#x27;).hidden=true;resize();updateUI();if(new URLSearchParams(location.search).get(&#x27;engine&#x27;)===&#x27;three&#x27;||(location.protocol.startsWith(&#x27;http&#x27;)&amp;&amp;new URLSearchParams(location.search).get(&#x27;engine&#x27;)!==&#x27;local&#x27;))enableThree();wake();
+})();&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+">3D 하드웨어 뷰어를 표시하려면 iframe 지원 브라우저가 필요합니다.</iframe>
+           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title"><div class="container contact-grid"><div class="reveal"><span class="eyebrow">06 / LET'S CONNECT</span><h2 class="section-heading" id="contact-title">다음 아이디어도,<br><span class="teal">직접 구현하고 싶습니다.</span></h2><p>임베디드 펌웨어, MCU 주변장치, 프로토콜 분석, 하드웨어와 소프트웨어가 만나는 문제에 관심이 있습니다. 코드와 프로젝트 기록은 GitHub에서 확인할 수 있습니다.</p></div><div class="contact-links reveal"><a class="btn btn-primary" href="https://github.com/AliveSophist" target="_blank" rel="noopener noreferrer">GITHUB PROFILE ↗</a><a class="btn btn-ghost" href="https://github.com/AliveSophist/USB_Hijacker" target="_blank" rel="noopener noreferrer">USB_HIJACKER REPO ↗</a></div></div></section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><span>© <span id="copyright-year">2026</span> <b>KIM KI HYEN</b> · EMBEDDED / FIRMWARE</span><span>DESIGNED WITH SIGNALS, BUILT WITH CODE <span class="teal">●</span></span></div></footer>
+  <noscript><div class="noscript">JavaScript가 비활성화되어 있어 타이핑/스크롤 애니메이션 및 인터랙티브 전환은 사용할 수 없습니다. 프로젝트 정보는 그대로 열람할 수 있습니다.</div></noscript>
+  <!-- GSAP / ScrollTrigger: 요청한 CDN 의존성. CDN 연결 없이도 기본 콘텐츠/버튼은 동작합니다. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const gsapReady = !!(window.gsap && window.ScrollTrigger);
+      const typeTarget = $('#typewriter');
+      const phrases = ['Embedded Firmware Developer','USB HID / Event-driven Systems','MCU · UART · SPI · C/C++','Ideas to Working Hardware'];
+      let phraseIndex = 0;
+      let typingHandle = null;
+      let mode = 'teensy';
+      let bus = 'all';
+      let scrollProgress = .12;
+
+      // Terminal typewriter: visual self-introduction; no external typing library required.
+      function startTyping() {
+        if (!typeTarget || reduced) return;
+        let charIndex = 0, deleting = false;
+        typeTarget.textContent = '';
+        function tick() {
+          const phrase = phrases[phraseIndex];
+          charIndex += deleting ? -1 : 1;
+          typeTarget.textContent = phrase.slice(0, Math.max(0, charIndex));
+          let delay = deleting ? 40 : 76;
+          if (!deleting && charIndex >= phrase.length) { deleting = true; delay = 1900; }
+          if (deleting && charIndex <= 0) { deleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; delay = 410; }
+          typingHandle = window.setTimeout(tick, delay);
+        }
+        typingHandle = window.setTimeout(tick, 550);
+      }
+      if (reduced && typeTarget) typeTarget.textContent = phrases[0];
+      else startTyping();
+
+      // Mobile navigation.
+      const menuBtn = $('#menu-toggle');
+      const mobileNav = $('#mobile-nav');
+      function closeMenu() { mobileNav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.setAttribute('aria-label', '메뉴 열기'); menuBtn.textContent = '☰'; }
+      menuBtn.addEventListener('click', () => {
+        const open = mobileNav.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', String(open));
+        menuBtn.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+        menuBtn.textContent = open ? '×' : '☰';
+      });
+      $$('#mobile-nav a').forEach(a => a.addEventListener('click', closeMenu));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+      // Scroll progress + active nav links.
+      const navLinks = $$('.desktop-nav a');
+      const navSections = navLinks.map(a => $(a.getAttribute('href'))).filter(Boolean);
+      let rafPending = false;
+      function updateWindowScroll() {
+        rafPending = false;
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        $('#progress-bar').style.width = ((window.scrollY / maxScroll) * 100) + '%';
+        const marker = window.scrollY + window.innerHeight * .35;
+        let selected = -1;
+        navSections.forEach((section, index) => { if (section.offsetTop <= marker) selected = index; });
+        navLinks.forEach((link, index) => link.classList.toggle('active', selected === index));
+        if (!gsapReady) updatePacketProgress();
+      }
+      window.addEventListener('scroll', () => {
+        if (!rafPending) { rafPending = true; requestAnimationFrame(updateWindowScroll); }
+      }, {passive:true});
+      window.addEventListener('resize', updateWindowScroll, {passive:true});
+      updateWindowScroll();
+      $('#copyright-year').textContent = String(new Date().getFullYear());
+
+      // Interactive architecture controls.
+      const modeButtons = $$('[data-mode]');
+      const busControls = $('#bus-controls');
+      const MODE_DETAILS = {
+        teensy: {
+          label: 'LIVE TOPOLOGY / TEENSY 4.1 + ESP8266',
+          caption: 'KEYBOARD → USB HOST → TEENSY 4.1 → USB HID → PC',
+          note1: ['USB HID 이벤트 파이프라인','Teensy 4.1이 키보드 입력 이벤트를 수신하고 Parser → Keymapper / Macro / KorPad를 거쳐 PC로 출력합니다.'],
+          note2: ['DarkJunction 시리얼 브리지','ESP8266의 웹 관리 기능을 별도 MCU로 분리하고, UART 및 디지털 핸드셰이크로 SD 파일 작업을 연결합니다.'],
+          buses: [{id:'all',label:'ALL'},{id:'usb',label:'USB HID'},{id:'uart',label:'UART / GPIO'},{id:'wifi',label:'WI-FI'}]
+        },
+        legacy: {
+          label: 'LEGACY TOPOLOGY / PRO MICRO 5V + UHS MINI V2.0',
+          caption: 'KEYBOARD → USB HOST SHIELD → SPI → PRO MICRO → USB HID → PC',
+          note1: ['USB Host Shield + SPI','ATmega32U4 기반 Pro Micro에 UHS mini v2.0을 연결해 외부 USB 키보드 입력을 수신합니다.'],
+          note2: ['초기 이벤트 처리 로직','키 입력 파서와 하드코딩 매크로, KorPad 모듈 및 부저 피드백을 구성한 초기 하드웨어입니다.'],
+          buses: [{id:'all',label:'ALL'},{id:'usb',label:'USB HID'},{id:'spi',label:'SPI'},{id:'gpio',label:'GPIO'}]
+        }
+      };
+      function applyBusHighlight() {
+        const visibleView = mode === 'teensy' ? $('#arch-teensy') : $('#arch-legacy');
+        $$('.wire[data-bus-type]', visibleView).forEach(line => {
+          const isMatch = bus === 'all' || line.dataset.busType === bus;
+          line.classList.toggle('trace-active',bus !== 'all' && isMatch);
+          line.classList.toggle('trace-dim',!isMatch);
+        });
+        $$('[data-packet-path]',visibleView).forEach(dot => {
+          dot.style.opacity = bus === 'all' || dot.dataset.busType === bus ? '1' : '.08';
+        });
+        $$('.bus-button',busControls).forEach(button => button.setAttribute('aria-pressed',String(button.dataset.bus === bus)));
+      }
+      function updatePacketProgress() {
+        const view = mode === 'teensy' ? $('#arch-teensy') : $('#arch-legacy');
+        const rect = $('#architecture').getBoundingClientRect();
+        if (!gsapReady) {
+          const full = Math.max(1, rect.height + innerHeight);
+          scrollProgress = Math.min(1, Math.max(0, (innerHeight - rect.top) / full));
+        }
+        $$('[data-packet-path]', view).forEach((dot, index) => {
+          const path = document.getElementById(dot.dataset.packetPath);
+          if (!path || typeof path.getTotalLength !== 'function') return;
+          const length = path.getTotalLength();
+          // Stagger packet positions so multiple bus links show different phases.
+          const position = (scrollProgress * 2.05 + index * .31) % 1;
+          const point = path.getPointAtLength(length * position);
+          dot.setAttribute('cx',point.x.toFixed(2));dot.setAttribute('cy',point.y.toFixed(2));
+        });
+      }
+      function setMode(next) {
+        mode = next;
+        bus = 'all';
+        const d = MODE_DETAILS[mode];
+        $('#arch-teensy').hidden = mode !== 'teensy';
+        $('#arch-legacy').hidden = mode !== 'legacy';
+        modeButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === mode)));
+        $('#arch-label').textContent = d.label;
+        $('#arch-caption').textContent = d.caption;
+        $('#arch-note1-title').textContent = d.note1[0];
+        $('#arch-note1-desc').textContent = d.note1[1];
+        $('#arch-note2-title').textContent = d.note2[0];
+        $('#arch-note2-desc').textContent = d.note2[1];
+        busControls.replaceChildren();
+        d.buses.forEach(b => {
+          const button = document.createElement('button');
+          button.type = 'button';button.className = 'bus-button';button.dataset.bus=b.id;
+          button.setAttribute('aria-pressed',String(b.id === 'all'));button.textContent=b.label;
+          button.addEventListener('click', () => {bus=b.id;applyBusHighlight();});
+          busControls.appendChild(button);
+        });
+        // Reset horizontal scroll when switching architectures.
+        $('.arch-scroll').scrollLeft = 0;
+        applyBusHighlight();updatePacketProgress();
+      }
+      modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+      setMode('teensy');
+
+      // GSAP ScrollTrigger is intentionally progressive enhancement: usable without network/CDN.
+      if (gsapReady && !reduced) {
+        const gsap = window.gsap;
+        gsap.registerPlugin(window.ScrollTrigger);
+        gsap.from('.hero-main > *', {opacity:0,y:25,duration:.75,stagger:.12,ease:'power3.out',delay:.11});
+        gsap.from('.hero-aside', {opacity:0,x:45,duration:1.0,ease:'power3.out',delay:.32});
+        gsap.from('.hero-bottom', {opacity:0,y:14,duration:.7,delay:.65});
+        $$('.reveal').forEach((el) => {
+          gsap.from(el, {scrollTrigger:{trigger:el,start:'top 88%',once:true},opacity:0,y:33,duration:.72,ease:'power2.out',clearProps:'opacity,transform'});
+        });
+        gsap.to('#hero-hottrace', {strokeDashoffset:-260,duration:18,ease:'none',repeat:-1});
+        window.ScrollTrigger.create({
+          trigger:'#architecture', start:'top 92%', end:'bottom 8%', scrub:true,
+          onUpdate:self => {scrollProgress=self.progress;updatePacketProgress();}
+        });
+      } else if ('IntersectionObserver' in window && !reduced) {
+        // CSS-only fallback when CDN scripts are unavailable.
+        const io = new IntersectionObserver(entries => entries.forEach(entry => {
+          if(entry.isIntersecting){entry.target.classList.add('visible');io.unobserve(entry.target);}
+        }),{threshold:.08});
+        $$('.reveal').forEach(el => io.observe(el));
+      }
+      // Re-check positions once layout and fonts settle.
+      window.addEventListener('load', () => { updateWindowScroll();updatePacketProgress(); if (gsapReady) window.ScrollTrigger.refresh(); });
+    })();
+  </script>
+<script>
+(function(){
+  const demo=document.querySelector('.signal-demo');
+  if(!demo)return;
+  function start(){
+    if(!demo.hasAttribute('data-waiting'))return;
+    demo.removeAttribute('data-waiting');
+    demo.querySelectorAll('.packet-a,.packet-b,.key,.process,.result,.idle').forEach(el=>{el.style.animationPlayState='running';});
+  }
+  if(document.readyState==='complete')start();
+  else window.addEventListener('load',start,{once:true});
+})();
+</script>
+</body>
+</html>
